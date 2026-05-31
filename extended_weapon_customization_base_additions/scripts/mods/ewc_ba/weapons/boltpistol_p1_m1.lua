@@ -242,10 +242,10 @@ attachment_slots.boltpistol_p1_m2 = table_clone(attachment_slots.boltpistol_p1_m
 local kitbashs = {
     [_item_ranged.."/magazines/boltgun_pistol_magazine_01_double"] = {
         attachments = {
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
             double_magazine_1 = {
                 item = _item_ranged.."/magazines/boltgun_pistol_magazine_01",
                 fix = {
@@ -313,10 +313,10 @@ local kitbashs = {
     },
     [_item_ranged.."/magazines/boltgun_pistol_magazine_02_double"] = {
         attachments = {
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
             double_magazine_1 = {
                 item = _item_ranged.."/magazines/boltgun_pistol_magazine_02",
                 fix = {

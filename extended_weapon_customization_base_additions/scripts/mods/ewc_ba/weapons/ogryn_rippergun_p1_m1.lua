@@ -37,6 +37,28 @@ attachments.ogryn_rippergun_p1_m2 = table_clone_safe(attachments.ogryn_rippergun
 attachments.ogryn_rippergun_p1_m3 = table_clone_safe(attachments.ogryn_rippergun_p1_m1)
 attachments.ogryn_rippergun_npc_01 = table_clone_safe(attachments.ogryn_rippergun_p1_m1)
 
+local attachment_slots = {
+    ogryn_rippergun_p1_m1 = {
+        flashlight = {
+            parent_slot = "barrel",
+            default_path = _item_empty_trinket,
+            fix = {
+                offset = {
+                    position = vector3_box(.135, .3, .04),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
+                    node = 1,
+                },
+            },
+        },
+    },
+}
+
+attachment_slots.ogryn_rippergun_p1_m2 = table_clone_safe(attachment_slots.ogryn_rippergun_p1_m1)
+attachment_slots.ogryn_rippergun_p1_m3 = table_clone_safe(attachment_slots.ogryn_rippergun_p1_m1)
+attachment_slots.ogryn_rippergun_npc_01 = table_clone_safe(attachment_slots.ogryn_rippergun_p1_m1)
+
 return {
     attachments = attachments,
+    attachment_slots = attachment_slots,
 }

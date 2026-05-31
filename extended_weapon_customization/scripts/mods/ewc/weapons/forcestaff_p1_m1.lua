@@ -83,6 +83,11 @@ return {
                 icon_render_unit_rotation_offset = {90, 30, 0},
                 icon_render_camera_position_offset = {-.075, -2.25, .3},
             },
+            force_staff_head_11 = {
+                replacement_path = _item_melee.."/heads/force_staff_head_11",
+                icon_render_unit_rotation_offset = {90, 30, 0},
+                icon_render_camera_position_offset = {-.075, -2.25, .3},
+            },
         },
         body = {
             force_staff_full_01 = {
@@ -112,6 +117,11 @@ return {
             },
             force_staff_full_06 = {
                 replacement_path = _item_melee.."/full/force_staff_full_06",
+                icon_render_unit_rotation_offset = {90, -30, 0},
+                icon_render_camera_position_offset = {0, -1.5, .4},
+            },
+            force_staff_full_07 = {
+                replacement_path = _item_melee.."/full/force_staff_full_07",
                 icon_render_unit_rotation_offset = {90, -30, 0},
                 icon_render_camera_position_offset = {0, -1.5, .4},
             },
@@ -152,6 +162,11 @@ return {
                 icon_render_unit_rotation_offset = {90, -30, 0},
                 icon_render_camera_position_offset = {0, -1.5, .5},
             },
+            force_staff_shaft_upper_07 = {
+                replacement_path = _item_ranged.."/shafts/force_staff_shaft_upper_07",
+                icon_render_unit_rotation_offset = {90, -30, 0},
+                icon_render_camera_position_offset = {0, -1.5, .5},
+            },
             force_staff_shaft_upper_ml01 = {
                 replacement_path = _item_ranged.."/shafts/force_staff_shaft_upper_ml01",
                 icon_render_unit_rotation_offset = {90, -30, 0},
@@ -186,6 +201,11 @@ return {
             },
             force_staff_shaft_lower_06 = {
                 replacement_path = _item_ranged.."/shafts/force_staff_shaft_lower_06",
+                icon_render_unit_rotation_offset = {90, -30, 0},
+                icon_render_camera_position_offset = {-.16, -4, -1.2},
+            },
+            force_staff_shaft_lower_07 = {
+                replacement_path = _item_ranged.."/shafts/force_staff_shaft_lower_07",
                 icon_render_unit_rotation_offset = {90, -30, 0},
                 icon_render_camera_position_offset = {-.16, -4, -1.2},
             },

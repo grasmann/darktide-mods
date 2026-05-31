@@ -65,6 +65,11 @@ return {
                 icon_render_unit_rotation_offset = {90, -30, 0},
                 icon_render_camera_position_offset = {.025, -1, .2},
             },
+            human_power_maul_shaft_07 = {
+                replacement_path = _item_ranged.."/shafts/human_power_maul_shaft_07",
+                icon_render_unit_rotation_offset = {90, -30, 0},
+                icon_render_camera_position_offset = {.025, -1, .2},
+            },
             human_power_maul_shaft_ml01 = {
                 replacement_path = _item_ranged.."/shafts/human_power_maul_shaft_ml01",
                 icon_render_unit_rotation_offset = {90, -30, 0},
@@ -99,6 +104,11 @@ return {
             },
             human_power_maul_head_06 = {
                 replacement_path = _item_melee.."/heads/human_power_maul_head_06",
+                icon_render_unit_rotation_offset = {90, 30, 0},
+                icon_render_camera_position_offset = {-.025, -1.25, .3},
+            },
+            human_power_maul_head_07 = {
+                replacement_path = _item_melee.."/heads/human_power_maul_head_07",
                 icon_render_unit_rotation_offset = {90, 30, 0},
                 icon_render_camera_position_offset = {-.025, -1.25, .3},
             },
@@ -141,6 +151,11 @@ return {
             },
             human_power_maul_connector_07 = {
                 replacement_path = _item_melee.."/connectors/human_power_maul_connector_07",
+                icon_render_unit_rotation_offset = {90, 45, 0},
+                icon_render_camera_position_offset = {-.025, -.75, .275},
+            },
+            human_power_maul_connector_08 = {
+                replacement_path = _item_melee.."/connectors/human_power_maul_connector_08",
                 icon_render_unit_rotation_offset = {90, 45, 0},
                 icon_render_camera_position_offset = {-.025, -.75, .275},
             },

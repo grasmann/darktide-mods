@@ -243,7 +243,6 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		},
 	})
 
-
 	instance.widget_definitions.color_text = UIWidget.create_definition(table_clone(DefaultPassTemplates.body_text), "color_text", {
 		gamepad_action = "secondary_action_pressed",
 		text = utf8_upper(localize("loc_weapon_inventory_color_text")),

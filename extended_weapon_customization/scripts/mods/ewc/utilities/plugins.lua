@@ -225,7 +225,7 @@ mod.load_plugins = function(self)
                     -- Attachment slots are key based - merge table
                     self.settings.attachment_slots = table_merge_recursive(self.settings.attachment_slots, plugin.attachment_slots)
                     -- Update attachment slots
-                    mod:update_attachment_slot_lookup_tables(plugin.attachment_slots, nil, plugin_mod, true)
+                    self:update_attachment_slot_lookup_tables(plugin.attachment_slots, nil, plugin_mod, true)
                 end
 
                 -- Load plugin kitbashs
@@ -260,8 +260,9 @@ mod.load_plugins = function(self)
 
             end
             
-            mod:print("loaded plugin "..tostring(plugin_mod:localize("mod_title") or plugin_mod:localize("mod_name") or plugin_mod:get_name()))
+            self:print("loaded plugin "..tostring(plugin_mod:localize("mod_title") or plugin_mod:localize("mod_name") or plugin_mod:get_name()))
             plugins[plugin_mod] = plugin
+            
         end
     end
 

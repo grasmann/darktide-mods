@@ -251,6 +251,62 @@ mod:hook(CLASS.PlayerUnitFxExtension, "_register_vfx_spawner", function(func, se
     spawners[spawner_name] = result
 end)
 
+-- trigger_gear_wwise_event_with_source
+mod:hook(CLASS.PlayerUnitFxExtension, "trigger_gear_wwise_event_with_source", function(func, self, sound_alias, external_properties, source_name, sync_to_clients, include_client, optional_attachment_name, ...)
+	-- local is_resim = self._unit_data_extension.is_resimulating
+
+	-- if is_resim then
+	-- 	return
+	-- end
+
+	-- local resolved, event_name, has_husk_events = self._visual_loadout_extension:resolve_gear_sound(sound_alias, external_properties)
+
+	-- if resolved then
+	-- 	local source = self._sources[source_name]
+	-- 	local reference_attachment_name = optional_attachment_name or VisualLoadoutExtractData.ROOT_ATTACH_NAME
+
+	-- 	source = source[reference_attachment_name]
+
+	-- 	if sync_to_clients and self._is_server then
+	-- 		local channel_id, game_object_id = self._player:channel_id(), self._game_object_id
+	-- 		local event_id = NetworkLookup.player_character_sounds[event_name]
+	-- 		local source_id = NetworkLookup.player_character_fx_sources[source_name]
+	-- 		local attachment_id = NetworkLookup.player_attachment_names[reference_attachment_name]
+
+	-- 		if include_client then
+	-- 			Managers.state.game_session:send_rpc_clients("rpc_play_player_sound", game_object_id, event_id, source_id, attachment_id, not not has_husk_events)
+	-- 		else
+	-- 			Managers.state.game_session:send_rpc_clients_except("rpc_play_player_sound", channel_id, game_object_id, event_id, source_id, attachment_id, not not has_husk_events)
+	-- 		end
+	-- 	end
+
+	-- 	return self:trigger_wwise_event(event_name, has_husk_events, source)
+	-- end
+
+	return func(self, sound_alias, external_properties, source_name, sync_to_clients, include_client, optional_attachment_name, ...)
+
+end)
+
+-- trigger_exclusive_gear_wwise_event
+mod:hook(CLASS.PlayerUnitFxExtension, "trigger_exclusive_gear_wwise_event", function(func, self, sound_alias, external_properties, optional_position, optional_except_sender, optional_parameter_name, optional_parameter_value, ...)
+	-- local is_resim = self._unit_data_extension.is_resimulating
+
+	-- if is_resim then
+	-- 	return
+	-- end
+
+	-- local resolved, event_name, _ = self._visual_loadout_extension:resolve_gear_sound(sound_alias, external_properties)
+
+	-- if not resolved then
+	-- 	return
+	-- end
+
+	-- self:trigger_exclusive_wwise_event(event_name, optional_position, optional_except_sender, optional_parameter_name, optional_parameter_value)
+
+	return func(self, sound_alias, external_properties, optional_position, optional_except_sender, optional_parameter_name, optional_parameter_value, ...)
+
+end)
+
 mod:hook(CLASS.PlayerUnitFxExtension, "_register_sound_source", function(func, self, sources, source_name, parent_unit, attachments_by_unit, attachment_name_lookup, optional_node_name, ...)
 	local wwise_source_node_cache = self._wwise_source_node_cache
 	local wwise_world = self._wwise_world

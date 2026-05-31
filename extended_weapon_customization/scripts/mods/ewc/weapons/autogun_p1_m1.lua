@@ -53,6 +53,11 @@ return {
                 icon_render_unit_rotation_offset = {90, -20, 90 - 30},
                 icon_render_camera_position_offset = {-.175, -2, 0},
             },
+            autogun_rifle_barrel_07 = {
+                replacement_path = _item_ranged.."/barrels/autogun_rifle_barrel_07",
+                icon_render_unit_rotation_offset = {90, -20, 90 - 30},
+                icon_render_camera_position_offset = {-.175, -2, 0},
+            },
             autogun_rifle_barrel_ml01 = {
                 replacement_path = _item_ranged.."/barrels/autogun_rifle_barrel_ml01",
                 icon_render_unit_rotation_offset = {90, -20, 90 - 30},
@@ -85,6 +90,11 @@ return {
                 icon_render_unit_rotation_offset = {90, 0, 30},
                 icon_render_camera_position_offset = {-.15, -1, .15},
             },
+            autogun_rifle_muzzle_06 = {
+                replacement_path = _item_ranged.."/muzzles/autogun_rifle_muzzle_06",
+                icon_render_unit_rotation_offset = {90, 0, 30},
+                icon_render_camera_position_offset = {-.15, -1, .15},
+            },
             autogun_rifle_muzzle_ml01 = {
                 replacement_path = _item_ranged.."/muzzles/autogun_rifle_muzzle_ml01",
                 icon_render_unit_rotation_offset = {90, 0, 30},
@@ -111,6 +121,11 @@ return {
         receiver = {
             autogun_rifle_receiver_01 = {
                 replacement_path = _item_ranged.."/recievers/autogun_rifle_receiver_01",
+                icon_render_unit_rotation_offset = {90, 0, 45},
+                icon_render_camera_position_offset = {-.175, -2, .25},
+            },
+            autogun_rifle_receiver_02 = {
+                replacement_path = _item_ranged.."/recievers/autogun_rifle_receiver_02",
                 icon_render_unit_rotation_offset = {90, 0, 45},
                 icon_render_camera_position_offset = {-.175, -2, .25},
             },
@@ -145,6 +160,11 @@ return {
             },
             autogun_rifle_stock_04 = {
                 replacement_path = _item_ranged.."/stocks/autogun_rifle_stock_04",
+                icon_render_unit_rotation_offset = {90, -10, 30},
+                icon_render_camera_position_offset = {.1, -1.5, .2},
+            },
+            autogun_rifle_stock_05 = {
+                replacement_path = _item_ranged.."/stocks/autogun_rifle_stock_05",
                 icon_render_unit_rotation_offset = {90, -10, 30},
                 icon_render_camera_position_offset = {.1, -1.5, .2},
             },

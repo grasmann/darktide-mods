@@ -246,10 +246,10 @@ attachment_slots.bolter_p1_m2 = table_clone(attachment_slots.bolter_p1_m1)
 local kitbashs = {
     [_item_ranged.."/magazines/boltgun_rifle_magazine_01_ba"] = {
         attachments = {
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
             magazine_1 = {
                 item = _item_ranged.."/magazines/boltgun_rifle_magazine_01",
                 fix = {
@@ -303,10 +303,10 @@ local kitbashs = {
     },
     [_item_ranged.."/magazines/boltgun_rifle_magazine_02_ba"] = {
         attachments = {
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
             magazine_1 = {
                 item = _item_ranged.."/magazines/boltgun_rifle_magazine_02",
                 fix = {
@@ -360,10 +360,10 @@ local kitbashs = {
     },
     [_item_ranged.."/magazines/boltgun_rifle_magazine_01_double"] = {
         attachments = {
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
             double_magazine_1 = {
                 item = _item_ranged.."/magazines/boltgun_rifle_magazine_01",
                 fix = {
@@ -442,10 +442,10 @@ local kitbashs = {
     },
     [_item_ranged.."/magazines/boltgun_rifle_magazine_02_double"] = {
         attachments = {
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
             double_magazine_1 = {
                 item = _item_ranged.."/magazines/boltgun_rifle_magazine_02",
                 fix = {
@@ -524,10 +524,10 @@ local kitbashs = {
     },
     [_item_ranged.."/magazines/bolter_plasma_magazine_01"] = {
         attachments = {
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
         },
         display_name = "",
         description = "loc_description_bolter_plasma_magazine_01",
@@ -563,10 +563,10 @@ local kitbashs = {
     },
     [_item_ranged.."/magazines/bolter_plasma_magazine_02"] = {
         attachments = {
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
         },
         display_name = "",
         description = "loc_description_bolter_plasma_magazine_02",
@@ -602,10 +602,10 @@ local kitbashs = {
     },
     [_item_ranged.."/magazines/bolter_plasma_magazine_03"] = {
         attachments = {
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
         },
         display_name = "",
         description = "loc_description_bolter_plasma_magazine_03",

@@ -34,10 +34,10 @@ local kitbashs = {
             ["content/characters/empty_item/empty_item"] = true,
         },
         attachments = {
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
         },
         workflow_checklist = {
         },
@@ -62,10 +62,10 @@ local kitbashs = {
             ["content/characters/empty_item/empty_item"] = true,
         },
         attachments = {
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
         },
         workflow_checklist = {
         },
@@ -91,6 +91,11 @@ return {
     attachment_slot_by_mod_by_weapon_by_name = attachments.attachment_slot_by_mod_by_weapon_by_name,
     hide_attachment_slots_in_menu = attachments.hide_attachment_slots_in_menu,
     packages_to_load = {
+        ["packages/ui/hud/world_markers/world_markers"] = true,
         ["content/levels/ui/inventory/inventory"] = true,
+
+        ["wwise/events/weapon/play_weapon_lasgun_crack_beam_nearby_husk"] = true,
+        ["content/fx/particles/enemies/lasgun_beam_enemy"] = true,
+        ["content/fx/particles/weapons/rifles/lasgun/lasgun_beam_standard_linger_enemy"] = true,
     },
 }

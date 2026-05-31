@@ -1,0 +1,1 @@
+xcopy /s /y "I:\Darktide\darktide-mods\pure_cinema\scripts\mods\pure_cinema" "G:\SteamLibrary\steamapps\common\Warhammer 40,000 DARKTIDE\mods\pure_cinema\scripts\mods\pure_cinema"

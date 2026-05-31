@@ -29,6 +29,39 @@ local VALID_SLOTS = {SLOT_PRIMARY, SLOT_SECONDARY}
 -- ##### ├┤ │ │││││   │ ││ ││││  ├─┤│ ││ │├┴┐└─┐ ######################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘  ┴ ┴└─┘└─┘┴ ┴└─┘ ######################################################################
 
+mod:hook(CLASS.EquipmentComponent, "initialize_equipment", function(func, slot_configuration, breed_settings, optional_slot_options, ...)
+	-- local equipment = {}
+	-- local slot_options = optional_slot_options or NO_SLOT_OPTIONS
+
+	-- for slot_name, config in pairs(slot_configuration) do
+	-- 	local slot = _create_slot_from_configuration(config, breed_settings, slot_options[slot_name] or NO_OPTIONS)
+
+	-- 	equipment[slot_name] = slot
+	-- end
+
+	-- return equipment
+
+    if mod.skip_link_children then
+        -- local slot_options = {
+        --     slot_primary = {
+        --         skip_link_children = false,
+        --     },
+        --     slot_secondary = {
+        --         skip_link_children = true,
+        --     },
+        -- }
+        optional_slot_options = optional_slot_options or {}
+        optional_slot_options.slot_primary = optional_slot_options.slot_primary or {}
+        optional_slot_options.slot_secondary = optional_slot_options.slot_secondary or {}
+        optional_slot_options.slot_primary.skip_link_children = true
+        optional_slot_options.slot_secondary.skip_link_children = true
+    end
+
+
+    return func(slot_configuration, breed_settings, optional_slot_options, ...)
+
+end)
+
 mod:hook(CLASS.EquipmentComponent, "_spawn_player_item_units", function(func, self, slot, unit_3p, unit_1p, attach_settings, optional_mission_template, optional_equipment, ...)
     local item = slot and slot.item
     -- Check item
@@ -81,9 +114,9 @@ mod:hook(CLASS.EquipmentComponent, "wield_slot", function(func, slot, first_pers
     unit_damage_type_callback(slot.parent_unit_3p, "on_wield", slot.name)
 end)
 
-mod:hook(CLASS.EquipmentComponent, "update_item_visibility", function(func, equipment, wielded_slot, unit_3p, unit_1p, first_person_mode, ...)
+mod:hook(CLASS.EquipmentComponent, "update_item_visibility", function(func, equipment, wielded_slot, unit_3p, unit_1p, first_person_mode, item_definitions, ...)
     -- Original function
-    func(equipment, wielded_slot, unit_3p, unit_1p, first_person_mode, ...)
+    func(equipment, wielded_slot, unit_3p, unit_1p, first_person_mode, item_definitions, ...)
     -- Update flashlight visibility
     unit_flashlight_callback(unit_3p, "on_update_item_visibility", wielded_slot)
     -- Update attachment callback visibility

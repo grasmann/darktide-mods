@@ -150,13 +150,17 @@ mod:hook(CLASS.UIWeaponSpawner, "_mouse_rotation_input", function(func, self, in
     if self.modding_tools and self.modding_tools:unit_manipulation_busy() then
         return
     end
+    local inventory_weapon_cosmetics_view = mod:get_view("inventory_weapon_cosmetics_view")
+    if inventory_weapon_cosmetics_view and inventory_weapon_cosmetics_view.ui_is_hovered then
+        return
+    end
     -- Original function
     func(self, input_service, dt, ...)
 end)
 
 mod:hook(CLASS.UIWeaponSpawner, "cb_on_unit_3p_streaming_complete", function(func, self, item_unit_3p, timeout, ...)
     -- Original function
-    func(self, item_unit_3p, nil, ...)
+    func(self, item_unit_3p, timeout, ...)
     -- Modding tools
     local weapon_spawn_data = self._weapon_spawn_data
     if weapon_spawn_data and weapon_spawn_data.streaming_complete and weapon_spawn_data.attachment_units_3p then

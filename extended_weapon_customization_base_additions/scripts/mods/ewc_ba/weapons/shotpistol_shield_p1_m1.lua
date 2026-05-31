@@ -258,10 +258,10 @@ local kitbashs = {
                 item = _minion.."/shields/chaos_ogryn_bulwark_shield_01",
                 children = {},
             },
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
         },
         disable_vfx_spawner_exclusion = true,
         is_fallback_item = false,
@@ -293,10 +293,10 @@ local kitbashs = {
                 item = _item_melee.."/ogryn_slabshield_p1_m1",
                 children = {},
             },
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
         },
         disable_vfx_spawner_exclusion = true,
         is_fallback_item = false,
@@ -328,10 +328,10 @@ local kitbashs = {
                 item = _item_melee.."/ogryn_slabshield_p1_m2",
                 children = {},
             },
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
         },
         disable_vfx_spawner_exclusion = true,
         is_fallback_item = false,
@@ -363,10 +363,10 @@ local kitbashs = {
                 item = _item_melee.."/ogryn_slabshield_p1_m3",
                 children = {},
             },
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
         },
         disable_vfx_spawner_exclusion = true,
         is_fallback_item = false,
@@ -398,10 +398,10 @@ local kitbashs = {
                 item = _item_melee.."/ogryn_slabshield_p1_04",
                 children = {},
             },
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
         },
         disable_vfx_spawner_exclusion = true,
         is_fallback_item = false,
@@ -433,10 +433,10 @@ local kitbashs = {
                 item = _item_melee.."/ogryn_slabshield_p1_05",
                 children = {},
             },
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
         },
         disable_vfx_spawner_exclusion = true,
         is_fallback_item = false,
@@ -468,10 +468,10 @@ local kitbashs = {
                 item = _item_melee.."/ogryn_slabshield_p1_06",
                 children = {},
             },
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
         },
         disable_vfx_spawner_exclusion = true,
         is_fallback_item = false,
@@ -503,10 +503,10 @@ local kitbashs = {
                 item = _item_melee.."/ogryn_slabshield_p1_ml01",
                 children = {},
             },
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
         },
         disable_vfx_spawner_exclusion = true,
         is_fallback_item = false,
@@ -548,10 +548,10 @@ local kitbashs = {
             ["content/weapons/player/ranged/stubgun_pistol/attachments/rail_off/rail_off"] = true,
         },
         attachments = {
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
         },
         workflow_checklist = {
         },
@@ -576,10 +576,10 @@ local kitbashs = {
             ["content/weapons/player/ranged/lasgun_pistol/attachments/rail_01/rail_01"] = true,
         },
         attachments = {
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
         },
         workflow_checklist = {
         },

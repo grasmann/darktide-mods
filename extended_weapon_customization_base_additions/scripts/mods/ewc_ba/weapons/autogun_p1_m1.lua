@@ -522,10 +522,10 @@ local kitbashs = {
 
     [_item_ranged.."/magazines/autogun_rifle_magazine_01_double"] = {
         attachments = {
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
             double_magazine_1 = {
                 item = _item_ranged.."/magazines/autogun_rifle_magazine_01",
                 fix = {
@@ -594,10 +594,10 @@ local kitbashs = {
     },
     [_item_ranged.."/magazines/autogun_rifle_magazine_02_double"] = {
         attachments = {
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
             double_magazine_1 = {
                 item = _item_ranged.."/magazines/autogun_rifle_magazine_02",
                 fix = {
@@ -665,10 +665,10 @@ local kitbashs = {
     },
     [_item_ranged.."/magazines/autogun_rifle_magazine_03_double"] = {
         attachments = {
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
             double_magazine_1 = {
                 item = _item_ranged.."/magazines/autogun_rifle_magazine_03",
                 fix = {
@@ -739,10 +739,10 @@ local kitbashs = {
 
     [_item_ranged.."/magazines/autogun_rifle_laser_magazine_01"] = {
         attachments = {
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
         },
         display_name = "",
         description = "loc_description_autogun_rifle_laser_magazine_01",
@@ -783,10 +783,10 @@ local kitbashs = {
     },
     [_item_ranged.."/magazines/autogun_rifle_laser_magazine_02"] = {
         attachments = {
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
         },
         display_name = "",
         description = "loc_description_autogun_rifle_laser_magazine_01",
@@ -827,10 +827,10 @@ local kitbashs = {
     },
     [_item_ranged.."/magazines/autogun_rifle_laser_magazine_03"] = {
         attachments = {
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
         },
         display_name = "",
         description = "loc_description_autogun_rifle_laser_magazine_01",
@@ -874,10 +874,10 @@ local kitbashs = {
 
     [_item_ranged.."/muzzles/autogun_rifle_invisible_muzzle_01"] = {
         attachments = {
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
             muzzle = {
                 item = _item_ranged.."/muzzles/autogun_rifle_ak_muzzle_05",
                 fix = {
@@ -922,10 +922,10 @@ local kitbashs = {
 
     [_item_ranged.."/muzzles/autogun_rifle_suppressed_muzzle_01"] = {
         attachments = {
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
             inv_muzzle = {
                 item = _item_ranged.."/muzzles/autogun_rifle_ak_muzzle_05",
                 fix = {
@@ -993,10 +993,10 @@ local kitbashs = {
     },
     [_item_ranged.."/muzzles/autogun_rifle_suppressed_muzzle_02"] = {
         attachments = {
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
             inv_muzzle = {
                 item = _item_ranged.."/muzzles/autogun_rifle_ak_muzzle_03",
                 fix = {
@@ -1064,10 +1064,10 @@ local kitbashs = {
     },
     [_item_ranged.."/muzzles/autogun_rifle_suppressed_muzzle_03"] = {
         attachments = {
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
             inv_muzzle = {
                 item = _item_ranged.."/muzzles/autogun_rifle_muzzle_02",
                 fix = {

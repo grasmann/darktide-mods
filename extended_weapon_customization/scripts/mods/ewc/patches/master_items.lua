@@ -192,10 +192,30 @@ mod.find_missing_attachments = function(self)
 
     end
 
+    -- local skip_attachments = {
+    --     "stub_pistol_receiver_01",
+    --     "stub_pistol_receiver_02",
+    --     "stub_pistol_receiver_ml01_ver01",
+    --     "stub_pistol_receiver_ml01_ver02",
+    --     "stub_pistol_receiver_deluxe_ver01",
+    --     "stub_pistol_receiver_deluxe_ver02",
+    --     "stub_pistol_magazine_01",
+    --     "stub_pistol_addon_01",
+    --     "stub_pistol_addon_02",
+    --     "stub_pistol_addon_deluxe",
+    --     "stub_pistol_addon_ml01_ver01",
+    --     "stub_pistol_addon_ml01_ver02",
+    --     "stub_pistol_grip_01",
+    --     "stub_pistol_grip_ml01",
+    --     "stub_pistol_grip_deluxe",
+    -- }
+
     if #_temp_names > 0 then
         self:print("################## unsupported attachments ##################")
         for _, name in pairs(_temp_names) do
+            -- if not self:cached_table_contains(skip_attachments, name) then
             self:print(name)
+            -- end
         end
         self:print("##########################################################")
     end
@@ -286,6 +306,10 @@ mod.master_items_randomize_store = function(self, item, offer_id)
     return mod:handle_store_item(item, offer_id)
 end
 
+mod.master_items_randomize_reward = function(self, item, gear_id)
+    return mod:handle_reward_item(item, gear_id)
+end
+
 -- Get cached player gear list from data service
 mod.player_gear_list = function(self)
     -- Get data service
@@ -312,218 +336,224 @@ mod:hook_require("scripts/backend/master_items", function(instance)
         mod:overwrite_attachment(attachments, target_slot, replacement_path)
     end
 
-    instance.item_plus_overrides = function(gear, gear_id, is_preview_item, ...)
-        local new_gear_id = math_uuid()
-        local item_instance = {
-            __gear = gear,
-            __gear_id = is_preview_item and new_gear_id or gear_id,
-            __original_gear_id = is_preview_item and gear_id,
-            __is_preview_item = is_preview_item and true or false
-        }
-        setmetatable(item_instance, {
-            __index = function (t, field_name)
-                local master_ver = rawget(item_instance, "__master_ver")
-                if master_ver ~= instance.get_cached_version() then
-                    local success = instance.update_master_data(item_instance)
-                    if not success then
-                        log_error("MasterItems", "[_item_plus_overrides][1] could not update master data with %s", gear.masterDataInstance.id)
+    mod:master_item_community_patch()
+
+    if not mod.micp_missing then
+
+        instance.item_plus_overrides = function(gear, gear_id, is_preview_item, ...)
+            local new_gear_id = math_uuid()
+            local item_instance = {
+                __gear = gear,
+                __gear_id = is_preview_item and new_gear_id or gear_id,
+                __original_gear_id = is_preview_item and gear_id,
+                __is_preview_item = is_preview_item and true or false
+            }
+            setmetatable(item_instance, {
+                __index = function (t, field_name)
+                    local master_ver = rawget(item_instance, "__master_ver")
+                    if master_ver ~= instance.get_cached_version() then
+                        local success = instance.update_master_data(item_instance)
+                        if not success then
+                            log_error("MasterItems", "[_item_plus_overrides][1] could not update master data with %s", gear.masterDataInstance.id)
+                            return nil
+                        end
+                    end
+                    if field_name == "gear_id" then
+                        return rawget(item_instance, "__gear_id")
+                    end
+                    if field_name == "gear" then
+                        return rawget(item_instance, "__gear")
+                    end
+                    local master_item = rawget(item_instance, "__master_item")
+                    if not master_item then
+                        log_warning("MasterItemCache", string_format("No master data for item with id %s", gear.masterDataInstance.id))
                         return nil
                     end
+                    local field_value = master_item[field_name]
+                    if field_name == "rarity" and field_value == -1 then
+                        return nil
+                    end
+                    return field_value
+                end,
+                __newindex = function (t, field_name, value)
+                    rawset(t, field_name, value)
+                end,
+                __tostring = function (t)
+                    local master_item = rawget(item_instance, "__master_item")
+                    return string_format("master_item: [%s] gear_id: [%s]", tostring(master_item and master_item.name), tostring(rawget(item_instance, "__gear_id")))
                 end
-                if field_name == "gear_id" then
-                    return rawget(item_instance, "__gear_id")
-                end
-                if field_name == "gear" then
-                    return rawget(item_instance, "__gear")
-                end
-                local master_item = rawget(item_instance, "__master_item")
-                if not master_item then
-                    log_warning("MasterItemCache", string_format("No master data for item with id %s", gear.masterDataInstance.id))
-                    return nil
-                end
-                local field_value = master_item[field_name]
-                if field_name == "rarity" and field_value == -1 then
-                    return nil
-                end
-                return field_value
-            end,
-            __newindex = function (t, field_name, value)
-                rawset(t, field_name, value)
-            end,
-            __tostring = function (t)
-                local master_item = rawget(item_instance, "__master_item")
-                return string_format("master_item: [%s] gear_id: [%s]", tostring(master_item and master_item.name), tostring(rawget(item_instance, "__gear_id")))
+            })
+            local success = instance.update_master_data(item_instance)
+            if not success then
+                log_error("MasterItems", "[_item_plus_overrides][2] could not update master data with %s", gear.masterDataInstance.id)
+                return nil
             end
-        })
-        local success = instance.update_master_data(item_instance)
-        if not success then
-            log_error("MasterItems", "[_item_plus_overrides][2] could not update master data with %s", gear.masterDataInstance.id)
-            return nil
+            return item_instance
         end
-        return item_instance
-    end
 
-    instance.store_item_plus_overrides = function(data)
-        local item_instance = {
-            __data = data,
-            __gear = {
-                masterDataInstance = {
-                    id = data.id,
-                    overrides = data.overrides,
+        instance.store_item_plus_overrides = function(data)
+            local item_instance = {
+                __data = data,
+                __gear = {
+                    masterDataInstance = {
+                        id = data.id,
+                        overrides = data.overrides,
+                    },
                 },
-            },
-            __gear_id = data.gear_id or data.gearId,
-        }
-        setmetatable(item_instance, {
-            __index = function (t, field_name)
-                local master_ver = rawget(item_instance, "__master_ver")
-                if master_ver ~= instance.get_cached_version() then
-                    local success = instance.update_master_data(item_instance)
-                    if not success then
-                        log_error("MasterItems", "[_store_item_plus_overrides][1] could not update master data with %s; %s", data.id, data.gear_id)
+                __gear_id = data.gear_id or data.gearId,
+            }
+            setmetatable(item_instance, {
+                __index = function (t, field_name)
+                    local master_ver = rawget(item_instance, "__master_ver")
+                    if master_ver ~= instance.get_cached_version() then
+                        local success = instance.update_master_data(item_instance)
+                        if not success then
+                            log_error("MasterItems", "[_store_item_plus_overrides][1] could not update master data with %s; %s", data.id, data.gear_id)
+                            return nil
+                        end
+                    end
+                    if field_name == "gear_id" then
+                        return rawget(item_instance, "__gear_id")
+                    end
+                    if field_name == "gear" then
+                        return rawget(item_instance, "__gear")
+                    end
+                    local master_item = rawget(item_instance, "__master_item")
+                    if not master_item then
+                        log_warning("MasterItemCache", string_format("No master data for item with id %s", item_instance.__asset_id))
+
                         return nil
                     end
-                end
-                if field_name == "gear_id" then
-                    return rawget(item_instance, "__gear_id")
-                end
-                if field_name == "gear" then
-                    return rawget(item_instance, "__gear")
-                end
-                local master_item = rawget(item_instance, "__master_item")
-                if not master_item then
-                    log_warning("MasterItemCache", string_format("No master data for item with id %s", item_instance.__asset_id))
-
-                    return nil
-                end
-                local field_value = master_item[field_name]
-                if field_name == "rarity" and field_value == -1 then
-                    return nil
-                end
-                return field_value
-            end,
-            __newindex = function (t, field_name, value)
-                rawset(t, field_name, value)
-            end,
-            __tostring = function (t)
-                local master_item = rawget(item_instance, "__master_item")
-
-                return string_format("master_item: [%s] gear_id: [%s]", tostring(master_item and master_item.name), tostring(rawget(item_instance, "__gear_id")))
-            end,
-        })
-        local success = instance.update_master_data(item_instance)
-        if not success then
-            log_error("MasterItems", "[_store_item_plus_overrides][2] could not update master data with %s; %s", data.id, data.gear_id)
-            return nil
-        end
-        return item_instance
-    end
-
-    instance.get_ui_item_instance = function(item)
-        local gear_override = item.gear and item.gear.masterDataInstance and item.gear.masterDataInstance.overrides
-        local overrides = item.overrides or gear_override
-        if overrides then
-            overrides = table_clone_instance(overrides)
-        else
-            overrides = {}
-        end
-        if item.slot_weapon_skin then
-            overrides.slot_weapon_skin = type(item.slot_weapon_skin) == "table" and item.slot_weapon_skin.name or item.slot_weapon_skin
-        end
-        local item_instance = {
-            __is_ui_item_preview = true,
-            __data = item,
-            __gear = {
-                masterDataInstance = {
-                    id = item.name,
-                    overrides = overrides,
-                },
-            },
-            __gear_id = item.gear_id or math_uuid(),
-        }
-        setmetatable(item_instance, {
-            __index = function (t, field_name)
-                local master_ver = rawget(item_instance, "__master_ver")
-                if master_ver ~= instance.get_cached_version() then
-                    local success = instance.update_master_data(item_instance)
-                    if not success then
-                        log_error("MasterItems", "[_store_item_plus_overrides][1] could not update master data with %s; %s", item.name, item.gear_id)
+                    local field_value = master_item[field_name]
+                    if field_name == "rarity" and field_value == -1 then
                         return nil
                     end
-                end
-                if field_name == "gear_id" then
-                    return rawget(item_instance, "__gear_id")
-                end
-                if field_name == "gear" then
-                    return rawget(item_instance, "__gear")
-                end
-                local master_item = rawget(item_instance, "__master_item")
-                if not master_item then
-                    log_warning("MasterItemCache", string_format("UI - No master data for item with id %s", item.name))
-                    return nil
-                end
-                local field_value = master_item[field_name]
-                if field_name == "rarity" and field_value == -1 then
-                    return nil
-                end
-                return field_value
-            end,
-            __newindex = function (t, field_name, value)
-                rawset(t, field_name, value)
-            end,
-            __tostring = function (t)
-                local master_item = rawget(item_instance, "__master_item")
-                return string_format("master_item: [%s] gear_id: [%s]", tostring(master_item and master_item.name), tostring(rawget(item_instance, "__gear_id")))
-            end,
-        })
-        local success = instance.update_master_data(item_instance)
-        if not success then
-            log_error("MasterItems", "UI - [_store_item_plus_overrides][2] could not update master data with %s; %s", item.name, item.gear_id)
-            return nil
+                    return field_value
+                end,
+                __newindex = function (t, field_name, value)
+                    rawset(t, field_name, value)
+                end,
+                __tostring = function (t)
+                    local master_item = rawget(item_instance, "__master_item")
+
+                    return string_format("master_item: [%s] gear_id: [%s]", tostring(master_item and master_item.name), tostring(rawget(item_instance, "__gear_id")))
+                end,
+            })
+            local success = instance.update_master_data(item_instance)
+            if not success then
+                log_error("MasterItems", "[_store_item_plus_overrides][2] could not update master data with %s; %s", data.id, data.gear_id)
+                return nil
+            end
+            return item_instance
         end
-        return item_instance
+
+        instance.get_ui_item_instance = function(item)
+            local gear_override = item.gear and item.gear.masterDataInstance and item.gear.masterDataInstance.overrides
+            local overrides = item.overrides or gear_override
+            if overrides then
+                overrides = table_clone_instance(overrides)
+            else
+                overrides = {}
+            end
+            if item.slot_weapon_skin then
+                overrides.slot_weapon_skin = type(item.slot_weapon_skin) == "table" and item.slot_weapon_skin.name or item.slot_weapon_skin
+            end
+            local item_instance = {
+                __is_ui_item_preview = true,
+                __data = item,
+                __gear = {
+                    masterDataInstance = {
+                        id = item.name,
+                        overrides = overrides,
+                    },
+                },
+                __gear_id = item.gear_id or math_uuid(),
+            }
+            setmetatable(item_instance, {
+                __index = function (t, field_name)
+                    local master_ver = rawget(item_instance, "__master_ver")
+                    if master_ver ~= instance.get_cached_version() then
+                        local success = instance.update_master_data(item_instance)
+                        if not success then
+                            log_error("MasterItems", "[_store_item_plus_overrides][1] could not update master data with %s; %s", item.name, item.gear_id)
+                            return nil
+                        end
+                    end
+                    if field_name == "gear_id" then
+                        return rawget(item_instance, "__gear_id")
+                    end
+                    if field_name == "gear" then
+                        return rawget(item_instance, "__gear")
+                    end
+                    local master_item = rawget(item_instance, "__master_item")
+                    if not master_item then
+                        log_warning("MasterItemCache", string_format("UI - No master data for item with id %s", item.name))
+                        return nil
+                    end
+                    local field_value = master_item[field_name]
+                    if field_name == "rarity" and field_value == -1 then
+                        return nil
+                    end
+                    return field_value
+                end,
+                __newindex = function (t, field_name, value)
+                    rawset(t, field_name, value)
+                end,
+                __tostring = function (t)
+                    local master_item = rawget(item_instance, "__master_item")
+                    return string_format("master_item: [%s] gear_id: [%s]", tostring(master_item and master_item.name), tostring(rawget(item_instance, "__gear_id")))
+                end,
+            })
+            local success = instance.update_master_data(item_instance)
+            if not success then
+                log_error("MasterItems", "UI - [_store_item_plus_overrides][2] could not update master data with %s; %s", item.name, item.gear_id)
+                return nil
+            end
+            return item_instance
+        end
+
+        mod:hook(instance, "get_item_instance", function(func, gear, gear_id, ...)
+            local item_instance = func(gear, gear_id, ...)
+            return mod:gear_settings(gear_id) and (mod:husk_item(gear_id) or mod:mod_item(gear_id, item_instance)) or item_instance
+        end)
+
+        mod:hook(instance, "create_preview_item_instance", function(func, item, ...)
+            -- Check item
+            if item and mod:cached_table_contains(VALID_ITEM_TYPES, item.item_type) then
+                -- Modify item
+                mod:modify_item(item)
+                -- Fixes
+                mod:apply_attachment_fixes(item)
+            end
+
+            -- ##### Original function ####################################################################################
+            local item_instance
+            local gear = table.clone_instance(item.__gear)
+            local gear_id = item.__gear_id
+        
+            if not gear then
+                log_warning("MasterItemCache", string_format("Gear list missing gear with id %s", gear_id))
+                return nil
+            else
+                -- local allow_modifications = true
+                item_instance = instance.item_plus_overrides(gear, gear_id, true)
+            end
+            -- ##### Original function ####################################################################################
+
+            -- Relay gear id
+            mod:gear_id_relay(item_instance.gear_id, item.gear_id)
+            -- Return
+            return item_instance
+        end)
+
+        mod:hook(instance, "get_store_item_instance", function(func, description, ...)
+            local item_instance = func(description, ...)
+            local gear_id = mod:gear_id(item_instance)
+            local offer_id = pt.gear_id_to_offer_id[gear_id]
+            -- Return randomized
+            return mod:master_items_randomize_store(item_instance, offer_id)
+        end)
+
     end
-
-    mod:hook(instance, "get_item_instance", function(func, gear, gear_id, ...)
-        local item_instance = func(gear, gear_id, ...)
-        return mod:gear_settings(gear_id) and (mod:husk_item(gear_id) or mod:mod_item(gear_id, item_instance)) or item_instance
-    end)
-
-    mod:hook(instance, "create_preview_item_instance", function(func, item, ...)
-        -- Check item
-        if item and mod:cached_table_contains(VALID_ITEM_TYPES, item.item_type) then
-            -- Modify item
-            mod:modify_item(item)
-            -- Fixes
-            mod:apply_attachment_fixes(item)
-        end
-
-        -- ##### Original function ####################################################################################
-        local item_instance
-        local gear = table.clone_instance(item.__gear)
-        local gear_id = item.__gear_id
-    
-        if not gear then
-            log_warning("MasterItemCache", string_format("Gear list missing gear with id %s", gear_id))
-            return nil
-        else
-            -- local allow_modifications = true
-            item_instance = instance.item_plus_overrides(gear, gear_id, true)
-        end
-        -- ##### Original function ####################################################################################
-
-        -- Relay gear id
-        mod:gear_id_relay(item_instance.gear_id, item.gear_id)
-        -- Return
-        return item_instance
-    end)
-
-    mod:hook(instance, "get_store_item_instance", function(func, description, ...)
-        local item_instance = func(description, ...)
-        local gear_id = mod:gear_id(item_instance)
-        local offer_id = pt.gear_id_to_offer_id[gear_id]
-        -- Return randomized
-        return mod:master_items_randomize_store(item_instance, offer_id)
-    end)
 
 end)

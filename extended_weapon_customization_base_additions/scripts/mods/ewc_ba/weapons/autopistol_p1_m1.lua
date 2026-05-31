@@ -223,10 +223,10 @@ local fixes = {
 local kitbashs = {
     [_item_ranged.."/magazines/autogun_pistol_magazine_01_double"] = {
         attachments = {
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
             double_magazine_1 = {
                 item = _item_ranged.."/magazines/autogun_pistol_magazine_01",
                 fix = {
@@ -294,10 +294,10 @@ local kitbashs = {
     },
     [_item_ranged.."/magazines/autopistol_laser_magazine_01"] = {
         attachments = {
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
         },
         display_name = "",
         description = "loc_description_autogun_rifle_laser_magazine_01",
@@ -338,10 +338,10 @@ local kitbashs = {
     },
     [_item_ranged.."/magazines/autopistol_laser_magazine_02"] = {
         attachments = {
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
         },
         display_name = "",
         description = "loc_description_autogun_rifle_laser_magazine_01",
@@ -382,10 +382,10 @@ local kitbashs = {
     },
     [_item_ranged.."/magazines/autopistol_laser_magazine_03"] = {
         attachments = {
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
         },
         display_name = "",
         description = "loc_description_autogun_rifle_laser_magazine_01",

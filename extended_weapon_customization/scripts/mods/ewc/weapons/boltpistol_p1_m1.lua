@@ -89,6 +89,11 @@ return {
                 icon_render_unit_rotation_offset = {90, 0, 45},
                 icon_render_camera_position_offset = {-.11, -1.75, .25},
             },
+            boltgun_pistol_receiver_08 = {
+                replacement_path = _item_ranged.."/recievers/boltgun_pistol_receiver_08",
+                icon_render_unit_rotation_offset = {90, 0, 45},
+                icon_render_camera_position_offset = {-.11, -1.75, .25},
+            },
             boltgun_pistol_receiver_ml01 = {
                 replacement_path = _item_ranged.."/recievers/boltgun_pistol_receiver_ml01",
                 icon_render_unit_rotation_offset = {90, 0, 45},
@@ -120,6 +125,11 @@ return {
             },
             boltgun_pistol_barrel_03 = {
                 replacement_path = _item_ranged.."/barrels/boltgun_pistol_barrel_03",
+                icon_render_unit_rotation_offset = {90, 0, 45},
+                icon_render_camera_position_offset = {-.08, -.5, .15},
+            },
+            boltgun_pistol_barrel_04 = {
+                replacement_path = _item_ranged.."/barrels/boltgun_pistol_barrel_04",
                 icon_render_unit_rotation_offset = {90, 0, 45},
                 icon_render_camera_position_offset = {-.08, -.5, .15},
             },

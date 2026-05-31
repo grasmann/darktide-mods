@@ -61,14 +61,6 @@ local attachment_slots = {
         sight_2 = {
             parent_slot = "sight",
             default_path = _item_empty_trinket,
-            -- fix = {
-            --     offset = {
-            --         position = vector3_box(.2, .25, -.25),
-            --         rotation = vector3_box(0, 0, 0),
-            --         scale = vector3_box(1, 1, 1),
-            --         node = 1,
-            --     },
-            -- },
         },
     },
 }
@@ -180,6 +172,16 @@ local fixes = {
             fix = {
                 attach = {
                     sight = "shotgun_rifle_sight_01",
+                },
+            },
+        },
+        {attachment_slot = "flashlight",
+            fix = {
+                offset = {
+                    position = vector3_box(0, 0, 0),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
+                    node = 1,
                 },
             },
         },

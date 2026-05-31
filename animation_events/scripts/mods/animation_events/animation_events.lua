@@ -133,12 +133,14 @@ mod.register_callback = function(self, event_name, callback)
 	}
 end
 
+local relevant_events = {}
+
 mod.find_pack_entries = function(self, event_name)
-	local relevant_events = {}
+	table.clear(relevant_events)
 	-- Iterate mod packs
 	for _, mod_pack in pairs(self.packs) do
 		-- Iterate packs
-		for event, event_pack in pairs (mod_pack) do
+		for event, event_pack in pairs(mod_pack) do
 			if table.array_contains(event_pack, event_name) then
 				relevant_events[#relevant_events+1] = event
 			end
@@ -155,7 +157,9 @@ mod.handle_callbacks = function(self, event_name, event_index, unit, first_perso
 		local pack_events = self:find_pack_entries(event_name)
 		if #pack_events > 0 then
 			for _, event in pairs(pack_events) do
-				callback.callback(event, event_index, unit, first_person, context)
+				if callback.event_name == event or callback.event_name == "__all" then
+					callback.callback(event, event_index, unit, first_person, context)
+				end
 			end
 		end
 	end

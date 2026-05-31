@@ -22,6 +22,11 @@ return {
         icon_render_unit_rotation_offset = {90, 0, 45},
         icon_render_camera_position_offset = {-.175, -2, .25},
     },
+    autogun_rifle_receiver_02 = {
+        replacement_path = _item_ranged.."/recievers/autogun_rifle_receiver_02",
+        icon_render_unit_rotation_offset = {90, 0, 45},
+        icon_render_camera_position_offset = {-.175, -2, .25},
+    },
     autogun_rifle_receiver_ml01 = {
         replacement_path = _item_ranged.."/recievers/autogun_rifle_receiver_ml01",
         icon_render_unit_rotation_offset = {90, 0, 45},

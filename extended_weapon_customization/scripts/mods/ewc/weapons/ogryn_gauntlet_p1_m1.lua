@@ -58,6 +58,11 @@ return {
                 icon_render_unit_rotation_offset = {90, -20, 90 - 30},
                 icon_render_camera_position_offset = {0, -9, 0},
             },
+            gauntlet_basic_barrel_06 = {
+                replacement_path = _item_ranged.."/barrels/gauntlet_basic_barrel_06",
+                icon_render_unit_rotation_offset = {90, -20, 90 - 30},
+                icon_render_camera_position_offset = {0, -9, 0},
+            },
             gauntlet_basic_barrel_ml01 = {
                 replacement_path = _item_ranged.."/barrels/gauntlet_basic_barrel_ml01",
                 icon_render_unit_rotation_offset = {90, -20, 90 - 30},
@@ -87,6 +92,11 @@ return {
             },
             gauntlet_basic_receiver_06 = {
                 replacement_path = _item_ranged.."/recievers/gauntlet_basic_receiver_06",
+                icon_render_unit_rotation_offset = {90, -20, 90 - 30},
+                icon_render_camera_position_offset = {0, -9, 0},
+            },
+            gauntlet_basic_receiver_07 = {
+                replacement_path = _item_ranged.."/recievers/gauntlet_basic_receiver_07",
                 icon_render_unit_rotation_offset = {90, -20, 90 - 30},
                 icon_render_camera_position_offset = {0, -9, 0},
             },

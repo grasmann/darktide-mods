@@ -53,6 +53,11 @@ return {
                 icon_render_unit_rotation_offset = {90, -30, 0},
                 icon_render_camera_position_offset = {0, -5, 0},
             },
+            shotgun_grenade_sight_05 = {
+                replacement_path = _item_ranged.."/sights/shotgun_grenade_sight_05",
+                icon_render_unit_rotation_offset = {90, -30, 0},
+                icon_render_camera_position_offset = {-.3, -5, 0},
+            },
             shotgun_grenade_sight_ml01 = {
                 replacement_path = _item_ranged.."/sights/shotgun_grenade_sight_ml01",
                 icon_render_unit_rotation_offset = {90, -30, 0},
@@ -90,6 +95,11 @@ return {
                 icon_render_unit_rotation_offset = {90, 20, 90 - 30},
                 icon_render_camera_position_offset = {-.55, -7, 1},
             },
+            shotgun_grenade_full_07 = {
+                replacement_path = _item_melee.."/full/shotgun_grenade_full_07",
+                icon_render_unit_rotation_offset = {90, 20, 90 - 30},
+                icon_render_camera_position_offset = {-.55, -7, 1},
+            },
             shotgun_grenade_full_ml01 = {
                 replacement_path = _item_melee.."/full/shotgun_grenade_full_ml01",
                 icon_render_unit_rotation_offset = {90, 20, 90 - 30},
@@ -119,6 +129,11 @@ return {
             },
             shotgun_grenade_grip_05 = {
                 replacement_path = _item_ranged.."/grips/shotgun_grenade_grip_05",
+                icon_render_unit_rotation_offset = {90, -20, -90 - 45},
+                icon_render_camera_position_offset = {-.5, -8, 0},
+            },
+            shotgun_grenade_grip_06 = {
+                replacement_path = _item_ranged.."/grips/shotgun_grenade_grip_06",
                 icon_render_unit_rotation_offset = {90, -20, -90 - 45},
                 icon_render_camera_position_offset = {-.5, -8, 0},
             },

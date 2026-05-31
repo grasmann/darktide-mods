@@ -46,6 +46,7 @@ local temp_random_attachment_list = {}
 local PROCESS_ITEM_TYPES = {"WEAPON_MELEE", "WEAPON_RANGED"}
 local _item = "content/items/weapons/player"
 local _item_empty_trinket = _item.."/trinkets/unused_trinket"
+local _empty_table = {}
 local SHIELD_WEAPONS = {
     "ogryn_powermaul_slabshield_p1_m1",
     "powermaul_shield_p1_m1",
@@ -64,32 +65,11 @@ local CUSTOM_ATTACHMENT_CACHE = {}
 mod.overwrite_attachment = function(self, attachments, target_slot, replacement_path)
     if not attachments then return end
     for slot, data in pairs(attachments) do
-        -- local master_item = pt.master_items_loaded and data.item and master_items.get_item(data.item)
         if slot == target_slot and data then
             data.item = replacement_path
             local attachment_item = pt.master_items_loaded and master_items.get_item(replacement_path)
             data.material_overrides = attachment_item and attachment_item.material_overrides or (data.material_overrides or {})
-
-            local _attachment_data = replacement_path and self.settings.attachment_data_by_item_string[replacement_path]
-            local attachment_mod = _attachment_data and pt.attachment_data_origin[_attachment_data] or self
-            -- data.mod = attachment_mod
-            data.is_custom = attachment_mod and attachment_mod ~= self
-            -- local items = {}
-            -- if data.material_overrides then
-            --     for index, material_override in pairs(data.material_overrides) do
-            --         for _, check_string in pairs(check_strings) do
-            --             if master_items.get_item(check_string..material_override) then
-            --                 items[index] = check_string..material_override
-            --                 break
-            --             end
-            --         end
-            --     end
-            --     data.material_override_items = items
-            -- end
         end
-        -- if master_item and master_item.attachments then
-        --     self:overwrite_attachment(master_item.attachments, target_slot, replacement_path)
-        -- end
         if data and data.children then
             self:overwrite_attachment(data.children, target_slot, replacement_path)
         end
@@ -104,21 +84,14 @@ mod.inject_attachment_slot_info = function(self, attachments, target_slot, slot_
         if data.children then
             self:inject_attachment_slot_info(data.children, target_slot, slot_info)
         end
-        -- local master_item = pt.master_items_loaded and data.item and master_items.get_item(data.item)
-        -- if master_item and master_item.attachments then
-        --     self:inject_attachment_slot_info(master_item.attachments, target_slot, slot_info)
-        -- end
     end
 end
 
 mod.clear_attachment = function(self, attachments, target_slot)
     for slot, data in pairs(attachments) do
-        -- local master_item = pt.master_items_loaded and data.item and master_items.get_item(data.item)
         if slot == target_slot then
             attachments[slot] = nil
             mod:print("clearing attachment slot "..tostring(slot))
-        -- elseif master_item and master_item.attachments then
-        --     self:clear_attachment_fixes(master_item.attachments, target_slot)
         elseif data.children then
             self:clear_attachment_fixes(data.children, target_slot)
         end
@@ -129,41 +102,18 @@ mod.inject_material_overrides = function(self, attachments, target_slot, materia
     for slot, data in pairs(attachments) do
         if slot == target_slot then
             data.material_overrides = material_overrides
-            -- local items = {}
-            -- for index, material_override in pairs(material_overrides) do
-            --     for _, check_string in pairs(check_strings) do
-            --         if master_items.get_item(check_string..material_override) then
-            --             items[index] = check_string..material_override
-            --             break
-            --         end
-            --     end
-            -- end
-            -- data.material_override_items = items
         end
         if data.children then
             self:overwrite_attachment(data.children, target_slot, material_overrides)
         end
-        -- local master_item = data.item and master_items.get_item(data.item)
-        -- if master_item and master_item.attachments then
-        --     self:fetch_attachment_fixes(master_item.attachments, target_slot, material_overrides)
-        -- end
     end
 end
 
 mod.inject_attachment = function(self, attachments, slot_name, inject_data)
-    
-    -- self:clear_attachment(attachments, slot_name)
-
     local parent_slots = mod:cached_split(inject_data.parent_slot, "|")
-
     for slot, attachment_data in pairs(attachments) do
-
         for _, parent_slot in pairs(parent_slots) do
-
-            -- mod:echo("inject slot "..tostring(slot_name).." into "..tostring(parent_slot))
-
             if slot == parent_slot then
-
                 attachment_data.children = attachment_data.children or {}
 
                 local existing_children = attachment_data.children[slot_name] and attachment_data.children[slot_name].children and table_clone_safe(attachment_data.children[slot_name].children)
@@ -171,62 +121,18 @@ mod.inject_attachment = function(self, attachments, slot_name, inject_data)
                 local item = existing_item and pt.master_items_loaded and master_items.get_item(existing_item)
                 local material_overrides = item and item.material_overrides or inject_data.material_overrides
 
-                -- attachment_data.children[slot_name] = attachment_data.children[slot_name] or {
-                --     item = inject_data.default_path,
-                --     children = {},
-                --     fix = inject_data.fix,
-                -- }
-
-                -- mod:print("injecting attachment slot "..tostring(slot_name).." into "..tostring(slot))
-                -- if inject_data.fix and inject_data.fix.offset then
-                --     mod:print("fix: p:"..tostring(inject_data.fix.offset.position)..", r:"..tostring(inject_data.fix.offset.rotation)..", s:"..tostring(inject_data.fix.offset.scale)..", n:"..tostring(inject_data.fix.offset.node))
-                -- end
-
-                -- local material_overrides = inject_data.material_overrides
-
-                -- if existing_item and existing_item ~= "" then
-                --     local item = master_items.get_item(existing_item)
-                --     material_overrides = item and item.material_overrides
-                -- end
-
-                -- local items = {}
-                -- if material_overrides then
-                --     for index, material_override in pairs(material_overrides) do
-                --         for _, check_string in pairs(check_strings) do
-                --             if master_items.get_item(check_string..material_override) then
-                --                 items[index] = check_string..material_override
-                --                 break
-                --             end
-                --         end
-                --     end
-                --     -- data.material_override_items = items
-                -- end
-
-                local _attachment_data = inject_data.default_path and self.settings.attachment_data_by_item_string[inject_data.default_path]
-                local attachment_mod = _attachment_data and pt.attachment_data_origin[_attachment_data] or self
-
                 attachment_data.children[slot_name] = {
                     item = existing_item or inject_data.default_path or "",
                     material_overrides = material_overrides or {},
                     children = existing_children or {},
-                    is_custom = attachment_mod ~= mod,
                     fix = inject_data.fix,
-                    -- mod = attachment_mod,
-                    -- material_override_items = items,
-                    -- leaf_attach_node_override = 1,
                 }
                 break
             end
             if attachment_data.children then
                 self:inject_attachment(attachment_data.children, slot_name, inject_data)
             end
-            -- local master_item = attachment_data.item and master_items.get_item(attachment_data.item)
-            -- if master_item and master_item.attachments then
-            --     self:fetch_attachment_fixes(master_item.attachments, slot_name, inject_data)
-            -- end
-
         end
-
     end
 end
 
@@ -682,7 +588,7 @@ mod.modify_item = function(self, item_data, fake_gear_id, optional_settings)
                     -- end
                 else
                     -- If no attachment slot was found delete fix
-                    -- inject_data.fix = nil
+                    inject_data.fix = nil
                 end
                 if item.attachments then
                     self:inject_attachment(item.attachments, slot_name, inject_data)
@@ -714,6 +620,10 @@ mod.modify_item = function(self, item_data, fake_gear_id, optional_settings)
             end
         end
 
+        -- if item.weapon_template == "ogryn_rippergun_p1_m1" then
+        --     mod:dtf(item, "heavystubber_p2_m1", 10)
+        -- end
+
     end
 end
 
@@ -736,6 +646,7 @@ mod.find_in_units = function(self, attachment_units, target_attachment_slot)
                 -- local attachment_slot_parts = mod:cached_split(attachment_slot_string, ".")
                 -- local attachment_slot = attachment_slot_parts and attachment_slot_parts[#attachment_slot_parts]
                 local attachment_slot = unit_get_data(attachment_unit, "attachment_slot")
+                -- local attachment_slot_long = unit_get_data(attachment_unit, "attachment_slot_long")
 
                 -- Check attachment slot and light in attachment unit
                 if attachment_slot == target_attachment_slot then --and unit_num_lights(attachment_unit) > 0 then
@@ -775,6 +686,56 @@ end
 
 mod.husk_item = function(self, gear_id)
     return pt.husk_items[gear_id]
+end
+
+mod.handle_reward_item = function(self, item, gear_id)
+    if not item or not gear_id then
+        return nil
+    end
+    -- Check if slot is supported, random players is enabled and item is valid
+    local item_type = item and item.item_type or "unknown"
+    -- Check conditions - correct item type, random players and item
+    if mod:cached_table_contains(PROCESS_ITEM_TYPES, item_type) and item and item.attachments then
+        -- -- Get gear id
+        -- local gear_id = mod:gear_id(item)
+        -- if not gear_id then
+        --     return item
+        -- end
+
+        -- local husk_item = mod:husk_item(gear_id)
+        -- if husk_item then
+        --     return husk_item
+        -- end
+
+        local inventory_cosmetics_view = mod:get_view("inventory_cosmetics_view")
+        if inventory_cosmetics_view then
+            return item
+        end
+
+        local mod_item = mod:mod_item(gear_id, item)
+        if not mod_item then
+            return item
+        end
+
+        local master_item = master_items.get_item(mod_item.name)
+        if not master_item then
+            return item
+        end
+
+        local random_gear_settings = mod:randomize_item(mod_item)
+        -- Set gear settings
+        if random_gear_settings then
+            mod:gear_settings(gear_id, random_gear_settings)
+            -- Modify item
+            mod:modify_item(mod_item, nil, random_gear_settings)
+            -- Attachment fixes
+            mod:apply_attachment_fixes(mod_item)
+        end
+
+        -- Return mod item
+        return mod_item
+    end
+    return item
 end
 
 mod.handle_husk_item = function(self, item)

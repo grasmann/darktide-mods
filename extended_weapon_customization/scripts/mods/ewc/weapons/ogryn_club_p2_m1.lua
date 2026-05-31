@@ -58,6 +58,11 @@ return {
                 icon_render_unit_rotation_offset = {90, -30, 0},
                 icon_render_camera_position_offset = {0, -8, 1.25},
             },
+            ogryn_club_pipe_full_06 = {
+                replacement_path = _item_melee.."/full/ogryn_club_pipe_full_06",
+                icon_render_unit_rotation_offset = {90, -30, 0},
+                icon_render_camera_position_offset = {0, -8, 1.25},
+            },
             ogryn_club_pipe_full_ml01 = {
                 replacement_path = _item_melee.."/full/ogryn_club_pipe_full_ml01",
                 icon_render_unit_rotation_offset = {90, -30, 0},

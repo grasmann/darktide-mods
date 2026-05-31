@@ -1,0 +1,1 @@
+xcopy /s /y "I:\Darktide\darktide-mods\animation_events\scripts\mods\animation_events" "G:\SteamLibrary\steamapps\common\Warhammer 40,000 DARKTIDE\mods\animation_events\scripts\mods\animation_events"

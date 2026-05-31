@@ -348,10 +348,10 @@ fixes.chainaxe_p1_m3 = table_clone(fixes.chainaxe_p1_m1)
 local kitbashs = {
     [_item_melee.."/blades/laser_blade_chain_axe_p1_01"] = {
         attachments = {
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
             tank = {
                 item = _item_melee.."/tanks/laser_blade_tank_01",
                 fix = {
@@ -405,10 +405,10 @@ local kitbashs = {
     },
     [_item_melee.."/blades/laser_blade_chain_axe_p1_02"] = {
         attachments = {
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
             tank = {
                 item = _item_melee.."/tanks/laser_blade_tank_02",
                 fix = {
@@ -462,10 +462,10 @@ local kitbashs = {
     },
     [_item_melee.."/blades/laser_blade_chain_axe_green_p1_01"] = {
         attachments = {
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
             tank = {
                 item = _item_melee.."/tanks/laser_blade_tank_01",
                 fix = {
@@ -519,10 +519,10 @@ local kitbashs = {
     },
     [_item_melee.."/blades/laser_blade_chain_axe_green_p1_02"] = {
         attachments = {
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
             tank = {
                 item = _item_melee.."/tanks/laser_blade_tank_02",
                 fix = {

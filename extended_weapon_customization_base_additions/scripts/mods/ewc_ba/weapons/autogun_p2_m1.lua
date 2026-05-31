@@ -530,10 +530,10 @@ attachment_slots.autogun_npc_05 = table_clone(attachment_slots.autogun_p2_m1)
 local kitbashs = {
     [_item_ranged.."/magazines/autogun_rifle_ak_magazine_01_double"] = {
         attachments = {
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
             double_magazine_1 = {
                 item = _item_ranged.."/magazines/autogun_rifle_ak_magazine_01",
                 fix = {

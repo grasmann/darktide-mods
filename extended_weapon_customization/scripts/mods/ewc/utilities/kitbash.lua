@@ -92,16 +92,16 @@ mod.kitbash_item = function(self, name, data)
                 -- Add shared material overrides
                 if template.attachments then
 
-                    if not data.disable_shared_material_overrides and not template.attachments.zzz_shared_material_overrides then
-                        template.attachments.zzz_shared_material_overrides = {
-                            item = "",
-                            children = {},
-                        }
-                    else
-                        template.attachments.zzz_shared_material_overrides = nil
-                    end
+                    -- if not data.disable_shared_material_overrides and not template.attachments.zzz_shared_material_overrides then
+                    --     template.attachments.zzz_shared_material_overrides = {
+                    --         item = "",
+                    --         children = {},
+                    --     }
+                    -- elseif data.disable_shared_material_overrides then
+                    --     template.attachments.zzz_shared_material_overrides = nil
+                    -- end
 
-                    -- template.attachments.zzz_shared_material_overrides = nil
+                    template.attachments.zzz_shared_material_overrides = nil
 
                     local attachment_slots = self:fetch_attachment_slots(template.attachments)
                     for attachment_slot, data in pairs(attachment_slots) do
@@ -181,16 +181,17 @@ mod.kitbash_item = function(self, name, data)
 
             if data.attachments then
 
-                -- Add shared material overrides
-                if not data.disable_shared_material_overrides and not data.attachments.zzz_shared_material_overrides then
-                    data.attachments.zzz_shared_material_overrides = {
-                        item = "",
-                        children = {},
-                    }
-                else
-                    data.attachments.zzz_shared_material_overrides = nil
-                end
-                -- data.attachments.zzz_shared_material_overrides = nil
+                -- -- Add shared material overrides
+                -- if not data.disable_shared_material_overrides and not data.attachments.zzz_shared_material_overrides then
+                --     data.attachments.zzz_shared_material_overrides = {
+                --         item = "",
+                --         children = {},
+                --     }
+                -- elseif data.disable_shared_material_overrides then
+                --     data.attachments.zzz_shared_material_overrides = nil
+                -- end
+
+                data.attachments.zzz_shared_material_overrides = nil
 
                 local attachment_slots = self:fetch_attachment_slots(data.attachments)
                 for attachment_slot, attachment_slot_data in pairs(attachment_slots) do

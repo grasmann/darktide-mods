@@ -4,12 +4,15 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
+local PlayerCharacterConstants = mod:original_require("scripts/settings/player_character/player_character_constants")
+local ItemSlotSettings = mod:original_require("scripts/settings/item/item_slot_settings")
 local master_items = mod:original_require("scripts/backend/master_items")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 -- #region Performance
+    local pairs = pairs
     local CLASS = CLASS
     local tostring = tostring
     local managers = Managers
@@ -71,6 +74,30 @@ mod:hook(CLASS.UIProfileSpawner, "ignore_slot", function(func, self, slot_id, ..
 	end
 end)
 
+mod:hook(CLASS.UIProfileSpawner, "_update_ingore_slots", function(func, self, ...)
+	local slot_configuration = PlayerCharacterConstants.slot_configuration
+	local gear_slots = {}
+	local ignored_slots = self._ignored_slots
+
+	for slot_id, config in pairs(slot_configuration) do
+
+        if slot_id ~= SLOT_PRIMARY and slot_id ~= SLOT_SECONDARY then
+            
+            local settings = ItemSlotSettings[slot_id]
+
+            if not ignored_slots[slot_id] and not settings.ignore_character_spawning then
+                gear_slots[slot_id] = config
+            end
+
+        end
+
+	end
+
+	if self._visible then
+		self:_update_items_visibility()
+	end
+end)
+
 mod:hook(CLASS.UIProfileSpawner, "spawn_profile", function(func, self, profile, position, rotation, scale, state_machine_or_nil, animation_event_or_nil, face_state_machine_key_or_nil, face_animation_event_or_nil, force_highest_mip_or_nil, disable_hair_state_machine_or_nil, optional_unit_3p, optional_ignore_state_machine, companion_data, ...)
     -- Unset ignore slots
     -- So that the real equipped items are loaded
@@ -89,11 +116,22 @@ end)
 
 mod:hook(CLASS.UIProfileSpawner, "_spawn_character_profile", function(func, self, profile, profile_loader, position, rotation, scale, state_machine, animation_event, face_state_machine_key, face_animation_event, force_highest_mip, disable_hair_state_machine, optional_unit_3p, optional_ignore_state_machine, companion_data, ...)
     
+    -- -- Unset ignore slots
+    -- -- So that the real equipped items are loaded
+    -- if not self._placement_name then
+    --     self._ignored_slots[SLOT_SECONDARY] = nil
+    --     self._ignored_slots[SLOT_PRIMARY] = nil
+    -- end
+
     -- Real equipment
     self:change_equipment(profile)
 
+    mod.skip_link_children = true
+
     -- Original function
     func(self, profile, profile_loader, position, rotation, scale, state_machine, animation_event, face_state_machine_key, face_animation_event, force_highest_mip, disable_hair_state_machine, optional_unit_3p, optional_ignore_state_machine, companion_data, ...)
+
+    mod.skip_link_children = false
 
 end)
 

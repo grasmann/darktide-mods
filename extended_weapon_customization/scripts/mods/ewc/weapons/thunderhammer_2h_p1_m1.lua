@@ -58,6 +58,11 @@ return {
                 icon_render_unit_rotation_offset = {90, -30, 0},
                 icon_render_camera_position_offset = {.025, -3, .65},
             },
+            thunder_hammer_shaft_06 = {
+                replacement_path = _item_ranged.."/shafts/thunder_hammer_shaft_06",
+                icon_render_unit_rotation_offset = {90, -30, 0},
+                icon_render_camera_position_offset = {.025, -3, .65},
+            },
             thunder_hammer_shaft_ml01 = {
                 replacement_path = _item_ranged.."/shafts/thunder_hammer_shaft_ml01",
                 icon_render_unit_rotation_offset = {90, -30, 0},
@@ -161,6 +166,11 @@ return {
             },
             thunder_hammer_pommel_05 = {
                 replacement_path = _item_melee.."/pommels/thunder_hammer_pommel_05",
+                icon_render_unit_rotation_offset = {90, 45, 0},
+                icon_render_camera_position_offset = {0, -.5, .1},
+            },
+            thunder_hammer_pommel_06 = {
+                replacement_path = _item_melee.."/pommels/thunder_hammer_pommel_06",
                 icon_render_unit_rotation_offset = {90, 45, 0},
                 icon_render_camera_position_offset = {0, -.5, .1},
             },

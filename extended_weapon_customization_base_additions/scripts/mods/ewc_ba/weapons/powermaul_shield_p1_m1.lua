@@ -122,10 +122,10 @@ local kitbashs = {
             ["wwise/events/weapon/play_shockmaul_1h_p2_swing"] = true,
         },
         attachments = {
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
             tank = {
                 item = _item_melee.."/tanks/laser_blade_tank_01",
                 fix = {
@@ -176,10 +176,10 @@ local kitbashs = {
             ["wwise/events/weapon/play_shockmaul_1h_p2_swing"] = true,
         },
         attachments = {
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
             tank = {
                 item = _item_melee.."/tanks/laser_blade_tank_02",
                 fix = {
@@ -230,10 +230,10 @@ local kitbashs = {
             ["wwise/events/weapon/play_shockmaul_1h_p2_swing"] = true,
         },
         attachments = {
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
             tank = {
                 item = _item_melee.."/tanks/laser_blade_tank_01",
                 fix = {
@@ -284,10 +284,10 @@ local kitbashs = {
             ["wwise/events/weapon/play_shockmaul_1h_p2_swing"] = true,
         },
         attachments = {
-            zzz_shared_material_overrides = {
-                item = "",
-                children = {},
-            },
+            -- zzz_shared_material_overrides = {
+            --     item = "",
+            --     children = {},
+            -- },
             tank = {
                 item = _item_melee.."/tanks/laser_blade_tank_02",
                 fix = {

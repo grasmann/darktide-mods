@@ -24,6 +24,22 @@ local SLOT_PRIMARY = "slot_primary"
 local SLOT_SECONDARY = "slot_secondary"
 local ATTACHMENT_SPAWN_STATUS = table_enum("waiting_for_companion_unit_spawn", "waiting_for_load", "fully_spawned")
 
+-- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
+-- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
+-- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
+
+mod.despawn_all_equipment = function(self)
+    for equipment_component, unit in pairs(pt.equipment_components) do
+        self:despawn_equipment(equipment_component)
+    end
+end
+
+mod.despawn_equipment = function(self, equipment_component)
+    if equipment_component and not equipment_component.__destroyed then
+        equipment_component:destroy()
+    end
+end
+
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┬ ┬┌─┐┌─┐┬┌─┌─┐ #############################################################################
 -- ##### │  │  ├─┤└─┐└─┐  ├─┤│ ││ │├┴┐└─┐ #############################################################################
 -- ##### └─┘┴─┘┴ ┴└─┘└─┘  ┴ ┴└─┘└─┘┴ ┴└─┘ #############################################################################

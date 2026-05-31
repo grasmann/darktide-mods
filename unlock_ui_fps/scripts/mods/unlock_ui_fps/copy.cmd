@@ -1,0 +1,1 @@
+xcopy /s /y "I:\Darktide\darktide-mods\unlock_ui_fps\scripts\mods\unlock_ui_fps" "G:\SteamLibrary\steamapps\common\Warhammer 40,000 DARKTIDE\mods\unlock_ui_fps\scripts\mods\unlock_ui_fps"

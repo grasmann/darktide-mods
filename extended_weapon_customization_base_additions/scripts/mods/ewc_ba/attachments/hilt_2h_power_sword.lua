@@ -34,6 +34,11 @@ return {
         icon_render_unit_rotation_offset = {90, -20, 30},
         icon_render_camera_position_offset = {-.05, -1.5, .3},
     },
+    ["2h_power_sword_hilt_04"] = {
+        replacement_path = _item_melee.."/hilts/2h_power_sword_hilt_04",
+        icon_render_unit_rotation_offset = {90, -20, 30},
+        icon_render_camera_position_offset = {-.05, -1.5, .3},
+    },
     ["2h_power_sword_hilt_ml01"] = {
         replacement_path = _item_melee.."/hilts/2h_power_sword_hilt_ml01",
         icon_render_unit_rotation_offset = {90, -20, 30},

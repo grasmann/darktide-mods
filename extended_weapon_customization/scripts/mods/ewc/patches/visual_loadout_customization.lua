@@ -4,9 +4,9 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
-local master_items = mod:original_require("scripts/backend/master_items")
 local VisualLoadoutExtractData = mod:original_require("scripts/extension_systems/visual_loadout/utilities/visual_loadout_extract_data")
 local ItemSlotUtils = mod:original_require("scripts/utilities/item_slot_utils")
+local master_items = mod:original_require("scripts/backend/master_items")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -15,9 +15,11 @@ local ItemSlotUtils = mod:original_require("scripts/utilities/item_slot_utils")
     local unit = Unit
     local pairs = pairs
     local table = table
+    local world = World
     local string = string
     local tostring = tostring
     local tonumber = tonumber
+    local Managers = Managers
     local unit_node = unit.node
     local table_size = table.size
     local unit_alive = unit.alive
@@ -31,7 +33,9 @@ local ItemSlotUtils = mod:original_require("scripts/utilities/item_slot_utils")
     local table_combine = table.combine
     local unit_has_node = unit.has_node
     local table_icombine = table.icombine
+    local world_destroy_unit = world.destroy_unit
     local table_set_readonly = table.set_readonly
+    local unit_get_child_units = unit.get_child_units
     local table_merge_recursive = table.merge_recursive
 --#endregion
 
@@ -68,33 +72,57 @@ mod.recursive_children = function(self, unit, attachment_units_by_unit, children
 end
 
 mod.implement_units = function(self, item_unit, attachments, attachment_units_by_unit, attachment_id_lookup, attachment_name_lookup, units)
-    -- Get sub-attachment units
-    local units = units or attachment_units_by_unit[item_unit]
-    -- Check units
-    if units then
-        -- Iterate through units
-        for _, unit in pairs(units) do
-            -- Set attachment slot
-            local slot = attachment_id_lookup[unit]
-            local attachment_slot_parts = string_split(slot, ".")
-            local attachment_slot = attachment_slot_parts and attachment_slot_parts[#attachment_slot_parts]
-            unit_set_data(unit, "attachment_slot", attachment_slot)
-            unit_set_data(unit, "attachment_slot_long", attachment_id_lookup[unit])
-            -- Get item path
-            local item_path = mod:fetch_attachment(attachments, attachment_slot)
-            -- Set attachment name
-            local attachment_name = self.settings.attachment_name_by_item_string[item_path]
-            unit_set_data(unit, "attachment_name", attachment_name)
-            -- Get attachment master item
-            local item = master_items.get_item(item_path)
-            -- Check item
-            if item and item.attachments then
-                -- Implement units
-                self:implement_units(item_unit, item.attachments, attachment_units_by_unit, attachment_id_lookup, attachment_name_lookup, attachment_units_by_unit[unit])
+    if item_unit then
+        -- Save unit
+
+        -- Get sub-attachment units
+        local units = units or attachment_units_by_unit[item_unit]
+        -- Check units
+        if units then
+            -- Iterate through units
+            for _, unit in pairs(units) do
+                -- Set attachment slot
+                local slot = attachment_id_lookup[unit]
+                local attachment_slot_parts = string_split(slot, ".")
+                local attachment_slot = attachment_slot_parts and attachment_slot_parts[#attachment_slot_parts]
+                unit_set_data(unit, "attachment_slot", attachment_slot)
+                unit_set_data(unit, "attachment_slot_long", attachment_id_lookup[unit])
+                -- Get item path
+                local item_path = mod:fetch_attachment(attachments, attachment_slot)
+                -- Set attachment name
+                local attachment_name = self.settings.attachment_name_by_item_string[item_path]
+                unit_set_data(unit, "attachment_name", attachment_name)
+                -- Get attachment master item
+                local item = master_items.get_item(item_path)
+                -- Check item
+                if item and item.attachments then
+                    -- Implement units
+                    self:implement_units(item_unit, item.attachments, attachment_units_by_unit, attachment_id_lookup, attachment_name_lookup, attachment_units_by_unit[unit])
+                end
             end
         end
     end
 end
+
+-- mod.register_unit = function(self, unit)
+--     pt.spawned_units[unit] = true
+--     self:print("registered unit: "..tostring(unit))
+-- end
+
+-- mod.delete_all_units = function(self)
+--     local world = self:world()
+--     if world then
+--         for unit, _ in pairs(pt.spawned_units) do
+--             if unit and unit_alive(unit) then
+--                 world_destroy_unit(world, unit)
+--                 mod:print("deleted unit: "..tostring(unit))
+--             end
+--         end
+--         table_clear(pt.spawned_units)
+--     else
+--         mod:print("error - world: "..tostring(world))
+--     end
+-- end
 
 -- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌ ##################################################################
 -- ##### │  │  ├─┤└─┐└─┐  ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││ ##################################################################
@@ -107,6 +135,9 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
         if item_data.attachments and attachment_units_by_unit[attachment_unit] then
 
             for _, sub_attachment_unit in pairs(attachment_units_by_unit[attachment_unit]) do
+
+                -- Register unit
+                -- mod:register_unit(sub_attachment_unit)
 
                 -- Set attachment slot
                 local attachment_slot_parts = string_split(attachment_id_lookup[sub_attachment_unit], ".")
@@ -395,20 +426,28 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
         return override_lookup
     end)
 
-    -- Reset parent and node method to earlier game version
-    mod:hook(instance, "_find_unit_node_recursive", function(func, unit, attach_node, item_data, attach_settings, extract_data, ...)
+    mod:check_visual_loadout_customization_community_patch()
 
-        -- local item = nil
-        -- if extract_data then
-        --     local parent = extract_data.parents[1]
-        --     local item_string = parent and extract_data.item_name_by_unit and extract_data.item_name_by_unit[parent]
-        --     item = item_string and master_items.get_item(item_string)
-        -- end
+    if not mod.vlcp_missing then
 
-        -- local item_path = item_data.name
-        -- local attachment_name = item_path and mod.settings.attachment_name_by_item_string[item_path]
+        -- Reset parent and node method to earlier game version
+        mod:hook(instance, "_find_unit_node_recursive", function(func, unit, attach_node, item_data, attach_settings, extract_data, ...)
 
-        -- if mod:is_custom_attachment(item_data, attachment_name, item) then
+            -- local parent_unit = nil
+            -- local attach_node_index = nil
+
+            -- local child_units = unit_get_child_units(unit)
+
+            -- for _, child_unit in pairs(child_units) do
+            --     parent_unit, attach_node_index = instance._find_unit_node_recursive(child_unit, attach_node)
+            -- end
+
+            -- if unit_has_node(unit, attach_node) then
+            --     parent_unit = unit
+            --     attach_node_index = unit_node(unit, attach_node)
+            -- end
+
+            -- return parent_unit, attach_node_index
 
             local attach_node_index
 
@@ -421,13 +460,11 @@ mod:hook_require("scripts/extension_systems/visual_loadout/utilities/visual_load
             end
 
             return unit, attach_node_index
-        -- --     mod:echo(tostring(attachment_name).." is CUSTOM")
-        -- -- else
-        -- --     mod:echo(tostring(attachment_name).." is default")
-        -- end
 
-        -- return func(unit, attach_node, item_data, attach_settings, extract_data, ...)
+            -- return func(unit, attach_node, item_data, attach_settings, extract_data, ...)
 
-    end)
+        end)
+
+    end
 
 end)

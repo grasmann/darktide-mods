@@ -15,17 +15,17 @@ local mod = get_mod("visible_equipment")
 local REFERENCE = "visible_equipment"
 
 mod:persistent_table(REFERENCE, {
-    equipment_components = {},
-    equipment_by_equipment_component = {},
-    item_units_by_equipment_component = {},
-    attachment_units_by_equipment_component = {},
-    unit_attachment_ids_by_equipment_component = {},
+    cache = mod:get("visible_equipment_entries") or {},
     unit_attachment_names_by_equipment_component = {},
+    unit_attachment_ids_by_equipment_component = {},
+    attachment_units_by_equipment_component = {},
+    item_units_by_equipment_component = {},
     item_names_by_equipment_component = {},
+    equipment_by_equipment_component = {},
+    equipment_components = {},
+    gear_placements = {},
     gear_id_relays = {},
     spawned_units = {},
-    gear_placements = {},
-    cache = mod:get("visible_equipment_entries") or {},
     cache_files = {},
 })
 
@@ -42,7 +42,7 @@ mod.print = function(self, message, echo)
             self:echo(message)
         end
     end
-    mod:info(message)
+    self:info(message)
 end
 
 mod.pt = function(self)
@@ -58,65 +58,70 @@ mod._on_setting_changed = function(self, setting_id)
     managers.event:trigger("visible_equipment_settings_changed")
 end
 
+mod._on_unload = function(self, exit_game)
+    -- Release packages
+    if exit_game then
+        -- self:release_packages()
+        self:despawn_all_equipment()
+    end
+end
+
 -- ##### ┌─┐┬  ┬┌─┐┌┐┌┌┬┐┌─┐ ##########################################################################################
 -- ##### ├┤ └┐┌┘├┤ │││ │ └─┐ ##########################################################################################
 -- ##### └─┘ └┘ └─┘┘└┘ ┴ └─┘ ##########################################################################################
 
-mod.on_all_mods_loaded = function()
-    mod:_on_all_mods_loaded()
-end
-
-mod.on_setting_changed = function(setting_id)
-    mod:_on_setting_changed(setting_id)
-end
+mod.on_all_mods_loaded = function() mod:_on_all_mods_loaded() end
+mod.on_setting_changed = function(setting_id) mod:_on_setting_changed(setting_id) end
 
 -- ##### ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌┌─┐ ################################################################################
 -- ##### ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││└─┐ ################################################################################
 -- ##### └─┘┴ └─ ┴ └─┘┘└┘└─┘┴└─┘┘└┘└─┘ ################################################################################
 
 -- ##### Load extensions ##############################################################################################
-mod:io_dofile("visible_equipment/scripts/mods/ve/extensions/common")
-mod:io_dofile("visible_equipment/scripts/mods/ve/extensions/visible_equipment_extension")
+local base_path = "visible_equipment/scripts/mods/ve/"
+local extensions_path = base_path.."extensions/"
+mod:io_dofile(extensions_path.."common")
+mod:io_dofile(extensions_path.."visible_equipment_extension")
 
 -- ##### Load utilities ###############################################################################################
-mod:io_dofile("visible_equipment/scripts/mods/ve/utilities/game")
-mod:io_dofile("visible_equipment/scripts/mods/ve/utilities/gear")
-mod.settings = mod:io_dofile("visible_equipment/scripts/mods/ve/utilities/settings")
-mod.plugins = mod:io_dofile("visible_equipment/scripts/mods/ve/utilities/plugins")
-mod.save_lua = mod:io_dofile("visible_equipment/scripts/mods/ve/utilities/save")
+local utilities_path = base_path.."utilities/"
+mod:io_dofile(utilities_path.."game")
+mod:io_dofile(utilities_path.."gear")
+mod.settings = mod:io_dofile(utilities_path.."settings")
+mod.plugins = mod:io_dofile(utilities_path.."plugins")
+mod.save_lua = mod:io_dofile(utilities_path.."save")
 
 -- ##### Load extended weapon customization plugin ####################################################################
-mod:io_dofile("visible_equipment/scripts/mods/ve/ewc_plugin")
+mod:io_dofile(base_path.."ewc_plugin")
 
 -- ##### ┌─┐┌─┐┌┬┐┌─┐┬ ┬┌─┐┌─┐ ########################################################################################
 -- ##### ├─┘├─┤ │ │  ├─┤├┤ └─┐ ########################################################################################
 -- ##### ┴  ┴ ┴ ┴ └─┘┴ ┴└─┘└─┘ ########################################################################################
-
-mod:io_dofile("visible_equipment/scripts/mods/ve/patches/inventory_cosmetics_view_definitions")
-mod:io_dofile("visible_equipment/scripts/mods/ve/patches/player_unit_visual_loadout_extension")
-mod:io_dofile("visible_equipment/scripts/mods/ve/patches/player_husk_visual_loadout_extension")
-mod:io_dofile("visible_equipment/scripts/mods/ve/patches/inventory_view_content_blueprints")
-mod:io_dofile("visible_equipment/scripts/mods/ve/patches/inventory_view_definitions")
-mod:io_dofile("visible_equipment/scripts/mods/ve/patches/main_menu_background_view")
-mod:io_dofile("visible_equipment/scripts/mods/ve/patches/inventory_background_view")
-mod:io_dofile("visible_equipment/scripts/mods/ve/patches/inventory_cosmetics_view")
-mod:io_dofile("visible_equipment/scripts/mods/ve/patches/action_shoot_projectile")
-mod:io_dofile("visible_equipment/scripts/mods/ve/patches/action_shoot_hit_scan")
-mod:io_dofile("visible_equipment/scripts/mods/ve/patches/action_shoot_pellets")
-mod:io_dofile("visible_equipment/scripts/mods/ve/patches/equipment_component")
-mod:io_dofile("visible_equipment/scripts/mods/ve/patches/ui_profile_spawner")
-mod:io_dofile("visible_equipment/scripts/mods/ve/patches/view_element_grid")
-mod:io_dofile("visible_equipment/scripts/mods/ve/patches/main_menu_view")
-mod:io_dofile("visible_equipment/scripts/mods/ve/patches/inventory_view")
-mod:io_dofile("visible_equipment/scripts/mods/ve/patches/result_view")
-mod:io_dofile("visible_equipment/scripts/mods/ve/patches/portrait_ui")
-mod:io_dofile("visible_equipment/scripts/mods/ve/patches/material_fx")
-mod:io_dofile("visible_equipment/scripts/mods/ve/patches/lobby_view")
-mod:io_dofile("visible_equipment/scripts/mods/ve/patches/ui_manager")
-mod:io_dofile("visible_equipment/scripts/mods/ve/patches/world")
+local patches_path = base_path.."patches/"
+mod:io_dofile(patches_path.."inventory_cosmetics_view_definitions")
+mod:io_dofile(patches_path.."player_unit_visual_loadout_extension")
+mod:io_dofile(patches_path.."player_husk_visual_loadout_extension")
+mod:io_dofile(patches_path.."inventory_view_content_blueprints")
+mod:io_dofile(patches_path.."inventory_view_definitions")
+mod:io_dofile(patches_path.."main_menu_background_view")
+mod:io_dofile(patches_path.."inventory_background_view")
+mod:io_dofile(patches_path.."inventory_cosmetics_view")
+mod:io_dofile(patches_path.."action_shoot_projectile")
+mod:io_dofile(patches_path.."action_shoot_hit_scan")
+mod:io_dofile(patches_path.."action_shoot_pellets")
+mod:io_dofile(patches_path.."equipment_component")
+mod:io_dofile(patches_path.."ui_profile_spawner")
+mod:io_dofile(patches_path.."view_element_grid")
+mod:io_dofile(patches_path.."main_menu_view")
+mod:io_dofile(patches_path.."inventory_view")
+mod:io_dofile(patches_path.."result_view")
+mod:io_dofile(patches_path.."portrait_ui")
+mod:io_dofile(patches_path.."material_fx")
+mod:io_dofile(patches_path.."lobby_view")
+mod:io_dofile(patches_path.."ui_manager")
+mod:io_dofile(patches_path.."world")
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐┌─┐┬─┐┌─┐┬─┐┬ ┬ ##################################################################################
 -- #####  │ ├┤ │││├─┘│ │├┬┘├─┤├┬┘└┬┘ ##################################################################################
 -- #####  ┴ └─┘┴ ┴┴  └─┘┴└─┴ ┴┴└─ ┴  ##################################################################################
-
-mod:io_dofile("visible_equipment/scripts/mods/ve/smooth_third_person_rotation")
+mod:io_dofile(base_path.."smooth_third_person_rotation")

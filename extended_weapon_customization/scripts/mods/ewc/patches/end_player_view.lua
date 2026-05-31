@@ -19,7 +19,8 @@ mod:hook(CLASS.EndPlayerView, "_get_item", function(func, self, card_reward, ...
         -- Sweep
         mod:sweep_gear_id(card_reward.gear_id)
         -- Randomize item
-        item = mod:master_items_randomize_store(item, card_reward.gear_id)
+        item = mod:master_items_randomize_reward(item, card_reward.gear_id)
+        mod:clear_mod_item(card_reward.gear_id)
         -- Get attachments
         local random_attachments = mod:gear_settings(card_reward.gear_id)
         -- Save to file

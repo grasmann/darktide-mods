@@ -52,6 +52,16 @@ return {
                 icon_render_unit_rotation_offset = {90, 0, 30},
                 icon_render_camera_position_offset = {.075, -1, .05},
             },
+            flamer_rifle_grip_05 = {
+                replacement_path = _item_ranged.."/grips/flamer_rifle_grip_05",
+                icon_render_unit_rotation_offset = {90, 0, 30},
+                icon_render_camera_position_offset = {.075, -1, .05},
+            },
+            flamer_rifle_grip_06 = {
+                replacement_path = _item_ranged.."/grips/flamer_rifle_grip_06",
+                icon_render_unit_rotation_offset = {90, 0, 30},
+                icon_render_camera_position_offset = {.075, -1, .05},
+            },
             flamer_rifle_grip_ml01 = {
                 replacement_path = _item_ranged.."/grips/flamer_rifle_grip_ml01",
                 icon_render_unit_rotation_offset = {90, 0, 30},
@@ -94,6 +104,16 @@ return {
                 icon_render_unit_rotation_offset = {90, 0, 45},
                 icon_render_camera_position_offset = {-.275, -3.5, .25},
             },
+            flamer_rifle_receiver_08 = {
+                replacement_path = _item_ranged.."/recievers/flamer_rifle_receiver_08",
+                icon_render_unit_rotation_offset = {90, 0, 45},
+                icon_render_camera_position_offset = {-.15, -2.75, .25},
+            },
+            flamer_rifle_receiver_09 = {
+                replacement_path = _item_ranged.."/recievers/flamer_rifle_receiver_09",
+                icon_render_unit_rotation_offset = {90, 0, 45},
+                icon_render_camera_position_offset = {-.15, -2.75, .25},
+            },
             flamer_rifle_receiver_ml01 = {
                 replacement_path = _item_ranged.."/recievers/flamer_rifle_receiver_ml01",
                 icon_render_unit_rotation_offset = {90, 0, 45},
@@ -118,6 +138,16 @@ return {
             },
             flamer_rifle_magazine_04 = {
                 replacement_path = _item_ranged.."/magazines/flamer_rifle_magazine_04",
+                icon_render_unit_rotation_offset = {90, 0, 30},
+                icon_render_camera_position_offset = {-.1, -1.5, -.05},
+            },
+            flamer_rifle_magazine_05 = {
+                replacement_path = _item_ranged.."/magazines/flamer_rifle_magazine_05",
+                icon_render_unit_rotation_offset = {90, 0, 30},
+                icon_render_camera_position_offset = {-.1, -1.5, -.05},
+            },
+            flamer_rifle_magazine_06 = {
+                replacement_path = _item_ranged.."/magazines/flamer_rifle_magazine_06",
                 icon_render_unit_rotation_offset = {90, 0, 30},
                 icon_render_camera_position_offset = {-.1, -1.5, -.05},
             },
@@ -162,6 +192,16 @@ return {
                 replacement_path = _item_ranged.."/barrels/flamer_rifle_barrel_07",
                 icon_render_unit_rotation_offset = {90, 0, 45},
                 icon_render_camera_position_offset = {-.1, -5, .175},
+            },
+            flamer_rifle_barrel_08 = {
+                replacement_path = _item_ranged.."/barrels/flamer_rifle_barrel_08",
+                icon_render_unit_rotation_offset = {90, 0, 45},
+                icon_render_camera_position_offset = {-.25, -2.5, .175},
+            },
+            flamer_rifle_barrel_09 = {
+                replacement_path = _item_ranged.."/barrels/flamer_rifle_barrel_09",
+                icon_render_unit_rotation_offset = {90, 0, 45},
+                icon_render_camera_position_offset = {-.25, -2.5, .175},
             },
             flamer_rifle_barrel_ml01 = {
                 replacement_path = _item_ranged.."/barrels/flamer_rifle_barrel_ml01",

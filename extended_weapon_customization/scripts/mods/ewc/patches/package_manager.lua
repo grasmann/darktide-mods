@@ -29,6 +29,7 @@ local function check_package_name(package_name)
     if pt.resource_packages[package_name] or mod:cached_find(package_name, "content/weapons") then
         -- Add to package table
         pt.resource_packages[package_name] = true
+        pt.loaded_packages[package_name] = true
     end
     -- Return package is a weapon package
     return pt.resource_packages[package_name]

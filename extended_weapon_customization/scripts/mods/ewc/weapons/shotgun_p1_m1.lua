@@ -240,5 +240,15 @@ return {
                 },
             },
         },
+        {attachment_slot = "flashlight",
+            fix = {
+                offset = {
+                    position = vector3_box(0, 0, 0),
+                    rotation = vector3_box(0, 0, 0),
+                    scale = vector3_box(1, 1, 1),
+                    node = 1,
+                },
+            },
+        },
     },
 }

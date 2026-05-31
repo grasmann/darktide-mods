@@ -1,10 +1,18 @@
 local mod = get_mod("extended_weapon_customization")
 
+-- ##### ┬─┐┌─┐┌─┐ ┬ ┬┬┬─┐┌─┐ #########################################################################################
+-- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
+-- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
+
+local TextUtilities = mod:original_require("scripts/utilities/ui/text")
+
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 -- #region Performance
     local table = table
+    local Color = Color
+    local get_mod = get_mod
     local managers = Managers
     local table_clear = table.clear
     local table_clone = table.clone
@@ -17,6 +25,10 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 local REFERENCE = "extended_weapon_customization"
+local base_path = "extended_weapon_customization/scripts/mods/ewc/"
+local extensions_path = base_path.."extensions/"
+local utilities_path = base_path.."utilities/"
+local patches_path = base_path.."patches/"
 
 mod:persistent_table(REFERENCE, {
     items_originating_from_customization_menu = {},
@@ -33,16 +45,16 @@ mod:persistent_table(REFERENCE, {
     kitbash_entries = {},
     weapon_packages = {},
     loaded_packages = {},
-    spawned_weapons = {},
     loaded_plugins = {},
     gear_id_relays = {},
     gear_settings = {},
+    spawned_units = {},
     cached_items = {},
     husk_items = {},
     items = {},
 })
 
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/extensions/common")
+mod:io_dofile(extensions_path.."common")
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
@@ -53,6 +65,22 @@ mod.pt = function(self)
 end
 
 local pt = mod:pt()
+
+mod.check_visual_loadout_customization_community_patch = function(self)
+    local vlcp = get_mod("visual_loadout_customization_community_patch")
+    self.vlcp_missing = not vlcp
+    if self.vlcp_missing then
+        self:echo(TextUtilities.apply_color_to_text("Extended Weapon Customization:\nDependency Visual Loadout Customization Community Patch is missing!", Color.ui_red_light(255, true)))
+    end
+end
+
+mod.master_item_community_patch = function(self)
+    local micp = get_mod("master_item_community_patch")
+    self.micp_missing = not micp
+    if self.micp_missing then
+        self:echo(TextUtilities.apply_color_to_text("Extended Weapon Customization:\nDependency Master Item Community Patch is missing!", Color.ui_red_light(255, true)))
+    end
+end
 
 mod.init = function(self)
     -- Clear mod items
@@ -112,54 +140,34 @@ end
 -- ##### ├┤ └┐┌┘├┤ │││ │ └─┐ ##########################################################################################
 -- ##### └─┘ └┘ └─┘┘└┘ ┴ └─┘ ##########################################################################################
 
-mod.update = function(dt)
-    mod:_update(dt)
-end
-
-mod.on_all_mods_loaded = function()
-    mod:_on_all_mods_loaded()
-end
-
-mod.on_setting_changed = function(setting_id)
-    mod:_on_setting_changed(setting_id)
-end
-
-mod.on_unload = function(exit_game)
-    mod:_on_unload(exit_game)
-end
-
-mod.clear_chat = function()
-    mod:_clear_chat()
-end
-
-mod.on_game_state_changed = function(status, state_name)
-    mod:_on_game_state_changed(status, state_name)
-end
+mod.update =                function(dt) mod:_update(dt) end
+mod.on_all_mods_loaded =    function() mod:_on_all_mods_loaded() end
+mod.on_setting_changed =    function(setting_id) mod:_on_setting_changed(setting_id) end
+mod.on_unload =             function(exit_game) mod:_on_unload(exit_game) end
+mod.clear_chat =            function() mod:_clear_chat() end
+mod.on_game_state_changed = function(status, state_name) mod:_on_game_state_changed(status, state_name) end
 
 -- ##### ┬ ┬┌┬┐┬┬  ┬┌┬┐┬┌─┐┌─┐ ########################################################################################
 -- ##### │ │ │ ││  │ │ │├┤ └─┐ ########################################################################################
 -- ##### └─┘ ┴ ┴┴─┘┴ ┴ ┴└─┘└─┘ ########################################################################################
 
 -- Load utilities
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/gear_settings")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/damage_types")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/packages")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/plugins")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/kitbash")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/cache")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/items")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/fixes")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/debug")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/game")
+mod:io_dofile(utilities_path.."gear_settings")
+mod:io_dofile(utilities_path.."damage_types")
+mod:io_dofile(utilities_path.."packages")
+mod:io_dofile(utilities_path.."plugins")
+mod:io_dofile(utilities_path.."kitbash")
+mod:io_dofile(utilities_path.."cache")
+mod:io_dofile(utilities_path.."items")
+mod:io_dofile(utilities_path.."fixes")
+mod:io_dofile(utilities_path.."debug")
+mod:io_dofile(utilities_path.."game")
 -- Load save lua
-mod.save_lua = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/save")
+mod.save_lua = mod:io_dofile(utilities_path.."save")
 -- Load settings
-mod.settings = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/utilities/settings")
-mod:dtf(mod.settings, "mod.settings", 10)
--- Clone settings of main mod
--- pt.extended_weapon_customization_plugin = table_clone(mod.settings)
+mod.settings = mod:io_dofile(utilities_path.."settings")
+-- Clone settings of main mod as a plugin
 pt.extended_weapon_customization_plugin = table_clone_instance(mod.settings)
--- pt.extended_weapon_customization_plugin = table_create_copy_instance(nil, mod.settings)
 -- Update flashlight templates
 mod:update_flashlight_templates(mod.settings.flashlight_templates)
 
@@ -168,54 +176,54 @@ mod:update_flashlight_templates(mod.settings.flashlight_templates)
 -- ##### ┴  ┴ ┴ ┴ └─┘┴ ┴└─┘└─┘ ########################################################################################
 
 -- Load patches
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/inventory_weapon_cosmetics_view_definitions")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/player_unit_visual_loadout_extension")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/player_husk_visual_loadout_extension")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/ui_character_profile_package_loader")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/player_unit_first_person_extension")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/player_husk_first_person_extension")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/view_element_tab_menu_definitions")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/inventory_weapon_cosmetics_view")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/visual_loadout_customization")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/inventory_weapon_marks_view")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/mispredict_package_handler")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/player_unit_fx_extension")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/view_element_tab_menu")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/hud_element_crosshair")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/attack_report_manager")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/interactee_extension")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/equipment_component")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/item_icon_loader_ui")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/item_pass_templates")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/ui_profile_spawner")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/mission_intro_view")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/view_element_grid")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/ui_weapon_spawner")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/end_player_view")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/package_manager")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/weapon_icon_ui")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/alternate_fire")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/camera_manager")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/minion_gibbing")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/crafting_view")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/input_service")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/store_service")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/gear_service")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/action_sweep")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/action_shoot")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/item_package")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/master_items")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/flashlight")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/patches/lobby_view")
+mod:io_dofile(patches_path.."inventory_weapon_cosmetics_view_definitions")
+mod:io_dofile(patches_path.."player_unit_visual_loadout_extension")
+mod:io_dofile(patches_path.."player_husk_visual_loadout_extension")
+mod:io_dofile(patches_path.."ui_character_profile_package_loader")
+mod:io_dofile(patches_path.."player_unit_first_person_extension")
+mod:io_dofile(patches_path.."player_husk_first_person_extension")
+mod:io_dofile(patches_path.."view_element_tab_menu_definitions")
+mod:io_dofile(patches_path.."inventory_weapon_cosmetics_view")
+mod:io_dofile(patches_path.."visual_loadout_customization")
+mod:io_dofile(patches_path.."inventory_weapon_marks_view")
+mod:io_dofile(patches_path.."mispredict_package_handler")
+mod:io_dofile(patches_path.."player_unit_fx_extension")
+mod:io_dofile(patches_path.."view_element_tab_menu")
+mod:io_dofile(patches_path.."hud_element_crosshair")
+mod:io_dofile(patches_path.."attack_report_manager")
+mod:io_dofile(patches_path.."interactee_extension")
+mod:io_dofile(patches_path.."equipment_component")
+mod:io_dofile(patches_path.."item_icon_loader_ui")
+mod:io_dofile(patches_path.."item_pass_templates")
+mod:io_dofile(patches_path.."ui_profile_spawner")
+mod:io_dofile(patches_path.."mission_intro_view")
+mod:io_dofile(patches_path.."view_element_grid")
+mod:io_dofile(patches_path.."ui_weapon_spawner")
+mod:io_dofile(patches_path.."end_player_view")
+mod:io_dofile(patches_path.."package_manager")
+mod:io_dofile(patches_path.."weapon_icon_ui")
+mod:io_dofile(patches_path.."alternate_fire")
+mod:io_dofile(patches_path.."camera_manager")
+mod:io_dofile(patches_path.."minion_gibbing")
+mod:io_dofile(patches_path.."crafting_view")
+mod:io_dofile(patches_path.."input_service")
+mod:io_dofile(patches_path.."store_service")
+mod:io_dofile(patches_path.."gear_service")
+mod:io_dofile(patches_path.."action_sweep")
+mod:io_dofile(patches_path.."action_shoot")
+mod:io_dofile(patches_path.."item_package")
+mod:io_dofile(patches_path.."master_items")
+mod:io_dofile(patches_path.."flashlight")
+mod:io_dofile(patches_path.."lobby_view")
 
 -- ##### ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌─┐┬┌─┐┌┐┌┌─┐ ################################################################################
 -- ##### ├┤ ┌┴┬┘ │ ├┤ │││└─┐││ ││││└─┐ ################################################################################
 -- ##### └─┘┴ └─ ┴ └─┘┘└┘└─┘┴└─┘┘└┘└─┘ ################################################################################
 
 -- Load extensions
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/extensions/attachment_callback_extension")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/extensions/damage_type_extension")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/extensions/flashlight_extension")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/extensions/shield_extension")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/extensions/sight_extension")
-mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/extensions/sway_extension")
+mod:io_dofile(extensions_path.."attachment_callback_extension")
+mod:io_dofile(extensions_path.."damage_type_extension")
+mod:io_dofile(extensions_path.."flashlight_extension")
+mod:io_dofile(extensions_path.."shield_extension")
+mod:io_dofile(extensions_path.."sight_extension")
+mod:io_dofile(extensions_path.."sway_extension")

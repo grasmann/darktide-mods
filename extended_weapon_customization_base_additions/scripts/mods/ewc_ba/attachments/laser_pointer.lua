@@ -92,7 +92,9 @@ local LOCKED_ACTIONS = {
     "action_unwield",
     "action_inspect",
     "action_reload",
+    -- "action_unzoom",
     "action_wield",
+    -- "action_zoom",
     "action_bash",
     "action_push",
 }
@@ -426,21 +428,25 @@ local function update_laser_pointer(flashlight_extension, dt, t)
                 
                 -- Aim lock
                 local locked = table_contains(LOCK_STATES, character_state_name)
+
+                -- Aiming
+                if flashlight_extension.alternate_fire_component.is_active then
+                    locked = true
+                end
+
                 -- Aim difference
                 local diff = vector3_normalize(laser_aim_position - flashlight_position) - vector3_normalize(laser_raw_direction - flashlight_position)
                 if diff[1] > ANGLE_THRESHOLD or diff[1] < -ANGLE_THRESHOLD or diff[2] > ANGLE_THRESHOLD or diff[2] < -ANGLE_THRESHOLD or diff[3] > ANGLE_THRESHOLD or diff[3] < -ANGLE_THRESHOLD then
                     locked = false
                 end
+
                 -- Weapon action
                 local weapon_action_component = unit_data_extension:read_component("weapon_action")
                 local current_action_name = weapon_action_component.current_action_name
                 if table_contains(LOCKED_ACTIONS, current_action_name) then
                     locked = false
                 end
-                -- Aiming
-                if flashlight_extension.alternate_fire_component.is_active then
-                    locked = true
-                end
+                
                 -- If locked then apply raw laser pointer position / rotation
                 if not locked then
                     laser_aim_position = laser_raw_direction
