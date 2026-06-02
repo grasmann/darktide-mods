@@ -802,7 +802,7 @@ DischargeExtension.fetch_data = function(self)
 							
 							self:hide_original_weapon(slot_name)
 							
-							break
+							-- break
 						end
 
 					end

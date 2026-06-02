@@ -157,7 +157,7 @@ local fixes = {
             },
             fix = {
                 offset = {
-                    position = vector3_box(0, -.185, .047),
+                    position = vector3_box(0, -.04, .096),
                     rotation = vector3_box(0, 0, 0),
                 },
             },
@@ -202,7 +202,7 @@ local fixes = {
             },
             fix = {
                 offset = {
-                    position = vector3_box(0, .02, .00),
+                    position = vector3_box(0, -.023, .096),
                     rotation = vector3_box(0, 0, 0),
                 },
             },
@@ -216,7 +216,7 @@ local fixes = {
             },
             fix = {
                 offset = {
-                    position = vector3_box(0, -.015, .012),
+                    position = vector3_box(0, -.063, .114),
                     rotation = vector3_box(0, 0, 0),
                 },
             },
@@ -230,7 +230,7 @@ local fixes = {
             },
             fix = {
                 offset = {
-                    position = vector3_box(0, -.004, .022),
+                    position = vector3_box(0, -.04, .114),
                     rotation = vector3_box(0, 0, 0),
                     scale = vector3_box(1, .6, 1),
                 },
