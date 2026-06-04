@@ -1,3 +1,4 @@
+-- File: servo_friend/scripts/mods/servo_friend/extensions/servo_friend_voice_extension.lua
 local mod = get_mod("servo_friend")
 
 -- ##### ┬─┐┌─┐┌─┐ ┬ ┬┬┬─┐┌─┐ #########################################################################################
@@ -169,13 +170,11 @@ ServoFriendVoiceExtension.on_settings_changed = function(self, setting_id)
         self.voice = "off"
     end
 
-    self.use_audio_mod              = mod:get("mod_option_use_audio_mod")
     self.victory_speech_frequency   = mod:get("mod_option_victory_speech_frequency")
     self.victory_speech_max         = (1 - self.victory_speech_frequency) * 100
 
     local should_reload_voice_lines = setting_id == nil or
         setting_id == voice_setting_id or
-        setting_id == "mod_option_use_audio_mod" or
         setting_id == "mod_option_victory_speech_frequency"
 
     if should_reload_voice_lines then
@@ -212,7 +211,7 @@ end
 ServoFriendVoiceExtension.talk = function(self, dt, t, optional_sound_event, servo_friend_unit, player_unit)
     -- local pt = self:pt()
     if self:is_initialized() and self.is_local_unit and self:is_me(servo_friend_unit) then
-        if self.use_audio_mod and self.audio_plugin and self:servo_friend_alive() then
+        if self.voice == "audio_server_plugin" and self.audio_plugin and self:servo_friend_alive() then
             self.audio_plugin:talk(dt, t, optional_sound_event, self.servo_friend_unit)
         elseif optional_sound_event == "start_alert" then
             self.alert_playing = self:start_repeating_sound("start_alert", 3)
@@ -278,7 +277,7 @@ ServoFriendVoiceExtension.load_voice_lines = function(self, clear)
 
         self.voice_lines_loaded = true
 
-        if self.voice ~= "off" then
+        if self.voice ~= "off" and self.voice ~= "audio_server_plugin" then
             conversation_files[#conversation_files + 1] = "dialogues/generated/" .. self.voice
         end
 

@@ -1,3 +1,4 @@
+-- File: servo_friend/scripts/mods/servo_friend/extensions/servo_friend_point_of_interest_extension.lua
 local mod = get_mod("servo_friend")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
@@ -6,6 +7,7 @@ local mod = get_mod("servo_friend")
 
 local unit = Unit
 local math = math
+local type = type
 local table = table
 local CLASS = CLASS
 local class = class
@@ -46,6 +48,7 @@ ServoFriendPointOfInterestExtension.init = function(self, extension_init_context
     self.closest = {
         object = nil,
         type = nil,
+        position = nil,
     }
     self.previous = nil
     self.valid = false
@@ -79,7 +82,7 @@ end
 
 -- ##### ┬ ┬┌─┐┌┬┐┌─┐┌┬┐┌─┐ ###########################################################################################
 -- ##### │ │├─┘ ││├─┤ │ ├┤  ###########################################################################################
--- ##### └─┘┴  ─┴┘┴ ┴ ┴ └─┘ ###########################################################################################
+-- ##### └─┘┴  ─┴┘┴ ┴ ┴ └─  ###########################################################################################
 
 ServoFriendPointOfInterestExtension.is_unit_alive = function(self, unit)
     return mod:is_unit_alive(unit)
@@ -169,7 +172,7 @@ ServoFriendPointOfInterestExtension.update = function(self, dt, t)
                 managers.event:trigger("servo_friend_talk", dt, t, event_name, self.servo_friend_unit, self.player_unit)
             end
             -- Set new interest
-            self:set(found_object, found_type)
+            self:set(found_object, found_type, found_position)
             -- Set position
             self.servo_friend_extension:on_servo_friend_set_target_position(target_position, found_position, self.valid)
         elseif was_valid then
@@ -248,7 +251,7 @@ ServoFriendPointOfInterestExtension.validate_point_of_interest = function(self, 
     end
 end
 
--- ##### ┌─┐┌─┐┬─┐┬  ┬┌─┐  ┌─┐┬─┐┬┌─┐┌┐┌┌┬┐  ┌─┐┬  ┬┌─┐┌┐┌┌┬┐┌─┐ ######################################################
+-- ##### ┌─┐┬─┐┬  ┬┌─┐  ┌─┐┬─┐┬┌─┐┌┐┌┌┬┐  ┌─┐┬  ┬┌─┐┌┐┌┌┬┐┌─┐ ######################################################
 -- ##### └─┐├┤ ├┬┘└┐┌┘│ │  ├┤ ├┬┘│├┤ │││ ││  ├┤ └┐┌┘├┤ │││ │ └─┐ ######################################################
 -- ##### └─┘└─┘┴└─ └┘ └─┘  └  ┴└─┴└─┘┘└┘─┴┘  └─┘ └┘ └─┘┘└┘ ┴ └─┘ ######################################################
 
@@ -315,13 +318,49 @@ ServoFriendPointOfInterestExtension.was_previous = function(self, object)
     return self.previous == object
 end
 
+ServoFriendPointOfInterestExtension.tag_enemy_laser_position = function(self)
+    if not self.valid or self.closest.type ~= "tag_enemy" then
+        return nil
+    end
+
+    local object = self.closest.object
+
+    if not object or object.__deleted then
+        return nil
+    end
+
+    if type(object.target_location) == "function" then
+        local target_location = object:target_location()
+
+        if target_location then
+            return target_location
+        end
+    end
+
+    local tag_unit = type(object.target_unit) == "function" and object:target_unit() or nil
+
+    if self:is_unit_alive(tag_unit) then
+        local enemy_height = self:enemy_height(object)
+
+        -- Fallback only: use a lower body-centre point rather than the full-height servo focus point.
+        return unit_world_position(tag_unit, 1) + vector3(0, 0, enemy_height * 0.5)
+    end
+
+    if self.closest.position then
+        return vector3_unbox(self.closest.position)
+    end
+
+    return nil
+end
+
 -- ##### ┌┬┐┌─┐┌┬┐┬ ┬┌─┐┌┬┐┌─┐ ########################################################################################
 -- ##### │││├┤  │ ├─┤│ │ ││└─┐ ########################################################################################
 -- ##### ┴ ┴└─┘ ┴ ┴ ┴└─┘─┴┘└─┘ ########################################################################################
 
-ServoFriendPointOfInterestExtension.set = function(self, object, interest_type)
+ServoFriendPointOfInterestExtension.set = function(self, object, interest_type, position)
     self.closest.object = object
     self.closest.type = interest_type
+    self.closest.position = position and vector3_box(position) or nil
 end
 
 ServoFriendPointOfInterestExtension.clear_current = function(self)

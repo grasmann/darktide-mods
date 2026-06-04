@@ -1,3 +1,4 @@
+-- File: servo_friend/scripts/mods/servo_friend/servo_friend.lua
 local mod = get_mod("servo_friend"); if not mod then return end
 
 -- ##### ┬─┐┌─┐┌─┐ ┬ ┬┬┬─┐┌─┐ #########################################################################################
@@ -298,6 +299,22 @@ mod.init = function(self)
     self._cached_archetype = nil
     self._archetype_settings = {}
 
+    self.servo_friend_appearance_definitions = nil
+    self.servo_friend_appearance_names = nil
+    self.servo_friend_appearance_options = nil
+
+    if self.servo_friend_build_appearance_registry then
+        self:servo_friend_build_appearance_registry()
+    end
+
+    if self.servo_friend_build_voice_registry then
+        self:servo_friend_build_voice_registry()
+    end
+
+    if self.servo_friend_register_appearance_packages then
+        self:servo_friend_register_appearance_packages()
+    end
+
     self:load_packages()
 
     self.p2p = get_mod("rtc")
@@ -320,6 +337,14 @@ mod.deinit = function(self)
     self._cached_archetype = nil
     self._archetype_settings = {}
     self._available_archetypes = nil
+
+    self.servo_friend_appearance_definitions = nil
+    self.servo_friend_appearance_names = nil
+    self.servo_friend_appearance_options = nil
+
+    self.servo_friend_voice_definitions = nil
+    self.servo_friend_voice_names = nil
+    self.servo_friend_voice_options = nil
 
     self:release_packages()
 end
@@ -648,6 +673,7 @@ mod:io_dofile("servo_friend/scripts/mods/servo_friend/components/package")
 -- ##### ┴─┘└─┘┴ ┴─┴┘  └─┘└─┘┴└─ └┘ └─┘  └  ┴└─┴└─┘┘└┘─┴┘  └─┘┴ └─ ┴ └─┘┘└┘└─┘┴└─┘┘└┘└─┘ ##############################
 
 mod:io_dofile("servo_friend/scripts/mods/servo_friend/extensions/servo_friend_base_extension")
+mod:io_dofile("servo_friend/scripts/mods/servo_friend/extensions/servo_friend_decoration_extension")
 mod:io_dofile("servo_friend/scripts/mods/servo_friend/extensions/servo_friend_tag_extension")
 mod:io_dofile("servo_friend/scripts/mods/servo_friend/extensions/servo_friend_marker_extension")
 mod:io_dofile("servo_friend/scripts/mods/servo_friend/extensions/servo_friend_point_of_interest_extension")
@@ -656,7 +682,7 @@ mod:io_dofile("servo_friend/scripts/mods/servo_friend/extensions/servo_friend_ho
 mod:io_dofile("servo_friend/scripts/mods/servo_friend/extensions/servo_friend_flashlight_extension")
 mod:io_dofile("servo_friend/scripts/mods/servo_friend/extensions/servo_friend_voice_extension")
 mod:io_dofile("servo_friend/scripts/mods/servo_friend/extensions/servo_friend_roaming_extension")
-mod:io_dofile("servo_friend/scripts/mods/servo_friend/extensions/servo_friend_transparency_extension")
+-- mod:io_dofile("servo_friend/scripts/mods/servo_friend/extensions/servo_friend_transparency_extension")
 mod:io_dofile("servo_friend/scripts/mods/servo_friend/extensions/servo_friend_out_of_bounds_extension")
 mod:io_dofile("servo_friend/scripts/mods/servo_friend/extensions/servo_friend_inspect_extension")
 mod:io_dofile("servo_friend/scripts/mods/servo_friend/extensions/servo_friend_alert_extension")
