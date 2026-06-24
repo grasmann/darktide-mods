@@ -315,14 +315,27 @@ mod:hook(CLASS.UIProfileSpawner, "ignore_slot", function(func, self, slot_id, ..
 end)
 
 mod:hook(CLASS.UIProfileSpawner, "_spawn_companion", function(func, self, unit_3p, breed_name, position, rotation, attach_to_character, ...)
-    -- Original function
-    local companion_unit_3p = func(self, unit_3p, breed_name, position, rotation, attach_to_character, ...)
-    -- Unlink companion
-    world_unlink_unit(self._world, companion_unit_3p)
-    unit_set_local_position(companion_unit_3p, 1, unit_world_position(unit_3p, 1) + vector3(-.55, .65, 0))
-    unit_set_local_rotation(companion_unit_3p, 1, unit_local_rotation(unit_3p, 1))
-    -- Return companion
-    return companion_unit_3p
+
+    local query_result = mod:compatibility_query("skip_companion_spawn_modification")
+
+    if not query_result then
+
+        -- Original function
+        local companion_unit_3p = func(self, unit_3p, breed_name, position, rotation, attach_to_character, ...)
+        -- Unlink companion
+        world_unlink_unit(self._world, companion_unit_3p)
+        unit_set_local_position(companion_unit_3p, 1, unit_world_position(unit_3p, 1) + vector3(-.55, .65, 0))
+        unit_set_local_rotation(companion_unit_3p, 1, unit_local_rotation(unit_3p, 1))
+        -- Return companion
+        return companion_unit_3p
+
+    else
+            
+        -- Original function
+        return func(self, unit_3p, breed_name, position, rotation, attach_to_character, ...)
+
+    end
+
 end)
 
 mod:hook(CLASS.UIProfileSpawner, "_get_raycast_hit", function(func, self, from, to, physics_world, collision_filter, ...)

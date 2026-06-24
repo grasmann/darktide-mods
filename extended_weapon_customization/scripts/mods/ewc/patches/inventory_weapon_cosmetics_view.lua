@@ -5,9 +5,9 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
 local inventory_weapon_cosmetics_view_definitions = mod:original_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_weapon_cosmetics_view_definitions")
-local ItemMaterialOverridesGearMaterials = mod:original_require("scripts/settings/equipment/item_material_overrides/item_material_overrides_gear_materials")
-local ItemMaterialOverridesGearPatterns = mod:original_require("scripts/settings/equipment/item_material_overrides/item_material_overrides_gear_patterns")
-local ItemMaterialOverridesGearColors = mod:original_require("scripts/settings/equipment/item_material_overrides/item_material_overrides_gear_colors")
+-- local ItemMaterialOverridesGearMaterials = mod:original_require("scripts/settings/equipment/item_material_overrides/item_material_overrides_gear_materials")
+-- local ItemMaterialOverridesGearPatterns = mod:original_require("scripts/settings/equipment/item_material_overrides/item_material_overrides_gear_patterns")
+-- local ItemMaterialOverridesGearColors = mod:original_require("scripts/settings/equipment/item_material_overrides/item_material_overrides_gear_colors")
 local ViewElementTabMenu = mod:original_require("scripts/ui/view_elements/view_element_tab_menu/view_element_tab_menu")
 local WwiseGameSyncSettings = mod:original_require("scripts/settings/wwise_game_sync/wwise_game_sync_settings")
 local DropdownPassTemplates = mod:original_require("scripts/ui/pass_templates/dropdown_pass_templates")
@@ -978,114 +978,114 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 
 	instance.create_color_dropdown = function(self)
 
-		local color_options = {}
-		-- Get color options
-		local gear_colors = ItemMaterialOverridesGearColors
-		-- Iterate through color options
-		for material_override_name, data in pairs(gear_colors) do
-			-- Generate display name
-			local display_name = material_override_name
-			-- display_name = string_gsub(display_name, "color_", "")
-			display_name = mod:cached_gsub(display_name, "color_", "")
-			-- display_name = string_gsub(display_name, "colour_", "")
-			display_name = mod:cached_gsub(display_name, "colour_", "")
-			-- display_name = string_gsub(display_name, "_", " ")
-			display_name = mod:cached_gsub(display_name, "_", " ")
-			-- display_name = string_gsub(display_name, "%f[%a].", string_upper)
-			display_name = mod:cached_gsub(display_name, "%f[%a].", string_upper)
-			-- Add color option
-			color_options[#color_options+1] = {
-				id = material_override_name,
-				display_name = display_name,
-				ignore_localization = true,
-				value = material_override_name,
-				disabled = false,
-				material_overrides = {
-					material_overrides = {
-						material_override_name,
-					}
-				},
-			}
-		end
+		-- local color_options = {}
+		-- -- Get color options
+		-- local gear_colors = ItemMaterialOverridesGearColors
+		-- -- Iterate through color options
+		-- for material_override_name, data in pairs(gear_colors) do
+		-- 	-- Generate display name
+		-- 	local display_name = material_override_name
+		-- 	-- display_name = string_gsub(display_name, "color_", "")
+		-- 	display_name = mod:cached_gsub(display_name, "color_", "")
+		-- 	-- display_name = string_gsub(display_name, "colour_", "")
+		-- 	display_name = mod:cached_gsub(display_name, "colour_", "")
+		-- 	-- display_name = string_gsub(display_name, "_", " ")
+		-- 	display_name = mod:cached_gsub(display_name, "_", " ")
+		-- 	-- display_name = string_gsub(display_name, "%f[%a].", string_upper)
+		-- 	display_name = mod:cached_gsub(display_name, "%f[%a].", string_upper)
+		-- 	-- Add color option
+		-- 	color_options[#color_options+1] = {
+		-- 		id = material_override_name,
+		-- 		display_name = display_name,
+		-- 		ignore_localization = true,
+		-- 		value = material_override_name,
+		-- 		disabled = false,
+		-- 		material_overrides = {
+		-- 			material_overrides = {
+		-- 				material_override_name,
+		-- 			}
+		-- 		},
+		-- 	}
+		-- end
 
-		-- Create dropdown
-		self:create_dropdown("color_dropdown", color_options, {350, 38})
+		-- -- Create dropdown
+		-- self:create_dropdown("color_dropdown", color_options, {350, 38})
 
 	end
 
 	instance.create_pattern_dropdown = function(self)
 
-		local pattern_options = {}
-		-- Get pattern options
-		local gear_patterns = ItemMaterialOverridesGearPatterns
-		-- Iterate through pattern options
-		for material_override_name, data in pairs(gear_patterns) do
-			-- Check for supported pattern
-			if data.texture_overrides and data.texture_overrides.coat_pattern then
-				-- Generate display name
-				local display_name = material_override_name
-				-- display_name = string_gsub(display_name, "pattern_", "")
-				display_name = mod:cached_gsub(display_name, "pattern_", "")
-				-- display_name = string_gsub(display_name, "_", " ")
-				display_name = mod:cached_gsub(display_name, "_", " ")
-				-- display_name = string_gsub(display_name, "%f[%a].", string_upper)
-				display_name = mod:cached_gsub(display_name, "%f[%a].", string_upper)
-				-- Add pattern option
-				pattern_options[#pattern_options+1] = {
-					id = material_override_name,
-					display_name = display_name,
-					ignore_localization = true,
-					value = material_override_name,
-					disabled = false,
-					material_overrides = {
-						material_overrides = {
-							material_override_name,
-						}
-					},
-				}
-			end
-		end
+		-- local pattern_options = {}
+		-- -- Get pattern options
+		-- local gear_patterns = ItemMaterialOverridesGearPatterns
+		-- -- Iterate through pattern options
+		-- for material_override_name, data in pairs(gear_patterns) do
+		-- 	-- Check for supported pattern
+		-- 	if data.texture_overrides and data.texture_overrides.coat_pattern then
+		-- 		-- Generate display name
+		-- 		local display_name = material_override_name
+		-- 		-- display_name = string_gsub(display_name, "pattern_", "")
+		-- 		display_name = mod:cached_gsub(display_name, "pattern_", "")
+		-- 		-- display_name = string_gsub(display_name, "_", " ")
+		-- 		display_name = mod:cached_gsub(display_name, "_", " ")
+		-- 		-- display_name = string_gsub(display_name, "%f[%a].", string_upper)
+		-- 		display_name = mod:cached_gsub(display_name, "%f[%a].", string_upper)
+		-- 		-- Add pattern option
+		-- 		pattern_options[#pattern_options+1] = {
+		-- 			id = material_override_name,
+		-- 			display_name = display_name,
+		-- 			ignore_localization = true,
+		-- 			value = material_override_name,
+		-- 			disabled = false,
+		-- 			material_overrides = {
+		-- 				material_overrides = {
+		-- 					material_override_name,
+		-- 				}
+		-- 			},
+		-- 		}
+		-- 	end
+		-- end
 
-		-- Create dropdown
-		self:create_dropdown("pattern_dropdown", pattern_options, {350, 38})
+		-- -- Create dropdown
+		-- self:create_dropdown("pattern_dropdown", pattern_options, {350, 38})
 
 	end
 
 	instance.create_wear_dropdown = function(self)
 
-		local wear_options = {}
-		-- Get wear options
-		local gear_wears = ItemMaterialOverridesGearMaterials
-		-- Iterate through wear options
-		for property_override_name, data in pairs(gear_wears) do
-			-- Check for supported wear
-			if data.property_overrides and data.property_overrides.chip_dirt then
-				-- Generate display name
-				local display_name = property_override_name
-				-- display_name = string_gsub(display_name, "wear_", "")
-				display_name = mod:cached_gsub(display_name, "wear_", "")
-				-- display_name = string_gsub(display_name, "_", " ")
-				display_name = mod:cached_gsub(display_name, "_", " ")
-				-- display_name = string_gsub(display_name, "%f[%a].", string_upper)
-				display_name = mod:cached_gsub(display_name, "%f[%a].", string_upper)
-				-- Add wear option
-				wear_options[#wear_options+1] = {
-					id = property_override_name,
-					display_name = display_name,
-					ignore_localization = true,
-					value = property_override_name,
-					disabled = false,
-					material_overrides = {
-						material_overrides = {
-							property_override_name,
-						}
-					},
-				}
-			end
-		end
+		-- local wear_options = {}
+		-- -- Get wear options
+		-- local gear_wears = ItemMaterialOverridesGearMaterials
+		-- -- Iterate through wear options
+		-- for property_override_name, data in pairs(gear_wears) do
+		-- 	-- Check for supported wear
+		-- 	if data.property_overrides and data.property_overrides.chip_dirt then
+		-- 		-- Generate display name
+		-- 		local display_name = property_override_name
+		-- 		-- display_name = string_gsub(display_name, "wear_", "")
+		-- 		display_name = mod:cached_gsub(display_name, "wear_", "")
+		-- 		-- display_name = string_gsub(display_name, "_", " ")
+		-- 		display_name = mod:cached_gsub(display_name, "_", " ")
+		-- 		-- display_name = string_gsub(display_name, "%f[%a].", string_upper)
+		-- 		display_name = mod:cached_gsub(display_name, "%f[%a].", string_upper)
+		-- 		-- Add wear option
+		-- 		wear_options[#wear_options+1] = {
+		-- 			id = property_override_name,
+		-- 			display_name = display_name,
+		-- 			ignore_localization = true,
+		-- 			value = property_override_name,
+		-- 			disabled = false,
+		-- 			material_overrides = {
+		-- 				material_overrides = {
+		-- 					property_override_name,
+		-- 				}
+		-- 			},
+		-- 		}
+		-- 	end
+		-- end
 
-		-- Create dropdown
-		self:create_dropdown("wear_dropdown", wear_options, {300, 38})
+		-- -- Create dropdown
+		-- self:create_dropdown("wear_dropdown", wear_options, {300, 38})
 
 	end
 
@@ -1108,9 +1108,9 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		local crosshair_toggle_hovered = self._widgets_by_name.crosshair_toggle and self._widgets_by_name.crosshair_toggle.content.hotspot.is_hover
 		local damage_type_toggle_hovered = self._widgets_by_name.damage_type_toggle and self._widgets_by_name.damage_type_toggle.content.hotspot.is_hover
 
-		local color_override_hovered = self._widgets_by_name.color_dropdown and self._widgets_by_name.color_dropdown.content.hotspot.is_hover or self._widgets_by_name.color_dropdown.content.hovered_option or self._widgets_by_name.color_dropdown.content.scrollbar_hotspot.is_hover or self._widgets_by_name.color_dropdown.content.drag_active
-		local pattern_override_hovered = self._widgets_by_name.pattern_dropdown and self._widgets_by_name.pattern_dropdown.content.hotspot.is_hover or self._widgets_by_name.pattern_dropdown.content.hovered_option or self._widgets_by_name.pattern_dropdown.content.scrollbar_hotspot.is_hover or self._widgets_by_name.pattern_dropdown.content.drag_active
-		local wear_override_hovered = self._widgets_by_name.wear_dropdown and self._widgets_by_name.wear_dropdown.content.hotspot.is_hover or self._widgets_by_name.wear_dropdown.content.hovered_option or self._widgets_by_name.wear_dropdown.content.scrollbar_hotspot.is_hover or self._widgets_by_name.wear_dropdown.content.drag_active
+		-- local color_override_hovered = self._widgets_by_name.color_dropdown and self._widgets_by_name.color_dropdown.content.hotspot.is_hover or self._widgets_by_name.color_dropdown.content.hovered_option or self._widgets_by_name.color_dropdown.content.scrollbar_hotspot.is_hover or self._widgets_by_name.color_dropdown.content.drag_active
+		-- local pattern_override_hovered = self._widgets_by_name.pattern_dropdown and self._widgets_by_name.pattern_dropdown.content.hotspot.is_hover or self._widgets_by_name.pattern_dropdown.content.hovered_option or self._widgets_by_name.pattern_dropdown.content.scrollbar_hotspot.is_hover or self._widgets_by_name.pattern_dropdown.content.drag_active
+		-- local wear_override_hovered = self._widgets_by_name.wear_dropdown and self._widgets_by_name.wear_dropdown.content.hotspot.is_hover or self._widgets_by_name.wear_dropdown.content.hovered_option or self._widgets_by_name.wear_dropdown.content.scrollbar_hotspot.is_hover or self._widgets_by_name.wear_dropdown.content.drag_active
 
 		local color_button_hovered = self._widgets_by_name.color_button and self._widgets_by_name.color_button.visible and self._widgets_by_name.color_button.content.hotspot.is_hover
 		local pattern_button_hovered = self._widgets_by_name.pattern_button and self._widgets_by_name.pattern_button.visible and self._widgets_by_name.pattern_button.content.hotspot.is_hover
@@ -1119,7 +1119,7 @@ mod:hook_require("scripts/ui/views/inventory_weapon_cosmetics_view/inventory_wea
 		return item_grid_hovered or tab_menu_hovered
 				or equip_button_hovered or reset_button_hovered or random_button_hovered
 				or alternate_fire_toggle_hovered or crosshair_toggle_hovered or damage_type_toggle_hovered
-				or color_override_hovered or pattern_override_hovered or wear_override_hovered
+				-- or color_override_hovered or pattern_override_hovered or wear_override_hovered
 				or color_button_hovered or pattern_button_hovered or wear_button_hovered
 
 	end
@@ -1305,10 +1305,13 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "cb_switch_tab", function(func, sel
 					local gear_id = mod:gear_id(self._presentation_item, true)
 					pt.items_originating_from_customization_menu[gear_id] = true
 
-					-- Preview presentation item
-					self:_preview_item(self._presentation_item)
+					-- -- Preview presentation item
+					-- self:_preview_item(self._presentation_item)
 
 				end
+
+				-- Preview presentation item
+				self:_preview_item(self._presentation_item)
 
 				-- Set selected index
 				self._selected_tab_index = index
@@ -1664,20 +1667,20 @@ mod:hook(CLASS.InventoryWeaponCosmeticsView, "update", function(func, self, dt, 
 		-- local damage_type_toggle_widget = widgets_by_name and widgets_by_name.damage_type_toggle
 		if widgets_by_name.damage_type_toggle then widgets_by_name.damage_type_toggle.visible = has_damage_type end
 
-		-- local color_dropdown = widgets_by_name.color_dropdown
-		self:update_dropdown(widgets_by_name.color_dropdown, input_service, dt, t)
-		-- local pattern_dropdown = widgets_by_name.pattern_dropdown
-		self:update_dropdown(widgets_by_name.pattern_dropdown, input_service, dt, t)
-		-- local wear_dropdown = widgets_by_name.wear_dropdown
-		self:update_dropdown(widgets_by_name.wear_dropdown, input_service, dt, t)
+		-- -- local color_dropdown = widgets_by_name.color_dropdown
+		-- self:update_dropdown(widgets_by_name.color_dropdown, input_service, dt, t)
+		-- -- local pattern_dropdown = widgets_by_name.pattern_dropdown
+		-- self:update_dropdown(widgets_by_name.pattern_dropdown, input_service, dt, t)
+		-- -- local wear_dropdown = widgets_by_name.wear_dropdown
+		-- self:update_dropdown(widgets_by_name.wear_dropdown, input_service, dt, t)
 
 		-- local color_button = widgets_by_name and widgets_by_name.color_button
 		-- local pattern_button = widgets_by_name and widgets_by_name.pattern_button
 		-- local wear_button = widgets_by_name and widgets_by_name.wear_button
 
-		if widgets_by_name.color_button then widgets_by_name.color_button.visible = widgets_by_name.color_dropdown.content.entry.get_function() end
-		if widgets_by_name.pattern_button then widgets_by_name.pattern_button.visible = widgets_by_name.pattern_dropdown.content.entry.get_function() end
-		if widgets_by_name.wear_button then widgets_by_name.wear_button.visible = widgets_by_name.wear_dropdown.content.entry.get_function() end
+		-- if widgets_by_name.color_button then widgets_by_name.color_button.visible = widgets_by_name.color_dropdown.content.entry.get_function() end
+		-- if widgets_by_name.pattern_button then widgets_by_name.pattern_button.visible = widgets_by_name.pattern_dropdown.content.entry.get_function() end
+		-- if widgets_by_name.wear_button then widgets_by_name.wear_button.visible = widgets_by_name.wear_dropdown.content.entry.get_function() end
 
 	else
 		local widgets_by_name = self._widgets_by_name

@@ -1,12 +1,11 @@
 local mod = get_mod("visual_loadout_customization_community_patch")
 
--- # Game Version 1.8.4
+-- # Game Version 1.12.0
 
 -- ##### ┬─┐┌─┐┌─┐ ┬ ┬┬┬─┐┌─┐ #########################################################################################
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
-local ItemMaterialOverrides = mod:original_require("scripts/settings/equipment/item_material_overrides/item_material_overrides")
 local Items = mod:original_require("scripts/utilities/items")
 local ItemSlotUtils = mod:original_require("scripts/utilities/item_slot_utils")
 local VisualLoadoutExtractData = mod:original_require("scripts/extension_systems/visual_loadout/utilities/visual_loadout_extract_data")

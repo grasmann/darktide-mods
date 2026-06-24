@@ -24,6 +24,6 @@ mod:hook(CLASS.LobbyView, "_set_slot_ready_status", function(func, self, slot, i
     -- Rotation auto-return
     local profile_spawner = slot and slot.profile_spawner
     if profile_spawner then
-        profile_spawner:_set_auto_rotation_return(is_ready)
+        profile_spawner:set_auto_rotation_return(is_ready)
     end
 end)

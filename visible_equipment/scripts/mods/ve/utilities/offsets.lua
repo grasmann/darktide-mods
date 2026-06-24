@@ -84,6 +84,7 @@ local WEAPON_MELEE = "WEAPON_MELEE"
 local WEAPON_RANGED = "WEAPON_RANGED"
 
 local offsets = {
+    default = human.offsets,
     [BREED_HUMAN] = human.offsets,
     [BREED_OGRYN] = ogryn.offsets,
     ogryn_powermaul_slabshield_p1_m1 = ogryn_powermaul_slabshield_p1_m1.offsets,

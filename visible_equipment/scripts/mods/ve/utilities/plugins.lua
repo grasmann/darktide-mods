@@ -24,6 +24,16 @@ local REFERENCE = "visible_equipment"
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘└─┘ ####################################################################################
 
+mod.compatibility_query = function(self, query_name, ...)
+    for mod, compatibility_data in pairs(self.settings.compatibility) do
+        if compatibility_data and compatibility_data[query_name] then
+            local result = compatibility_data[query_name](mod, ...)
+            if result == true then return true end
+        end
+    end
+    return false
+end
+
 mod.load_plugins = function(self)
     local DMF = get_mod("DMF")
     local plugins = {}
@@ -64,6 +74,10 @@ mod.load_plugins = function(self)
 
                 if plugin.placement_camera then
                     self.settings.placement_camera = table_merge_recursive(self.settings.placement_camera, plugin.placement_camera)
+                end
+
+                if plugin.compatibility then
+                    self.settings.compatibility[plugin_mod] = plugin.compatibility
                 end
             end
 

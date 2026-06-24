@@ -74,29 +74,29 @@ mod:hook(CLASS.UIProfileSpawner, "ignore_slot", function(func, self, slot_id, ..
 	end
 end)
 
-mod:hook(CLASS.UIProfileSpawner, "_update_ingore_slots", function(func, self, ...)
-	local slot_configuration = PlayerCharacterConstants.slot_configuration
-	local gear_slots = {}
-	local ignored_slots = self._ignored_slots
+-- mod:hook(CLASS.UIProfileSpawner, "_update_ingore_slots", function(func, self, ...)
+-- 	local slot_configuration = PlayerCharacterConstants.slot_configuration
+-- 	local gear_slots = {}
+-- 	local ignored_slots = self._ignored_slots
 
-	for slot_id, config in pairs(slot_configuration) do
+-- 	for slot_id, config in pairs(slot_configuration) do
 
-        if slot_id ~= SLOT_PRIMARY and slot_id ~= SLOT_SECONDARY then
+--         if slot_id ~= SLOT_PRIMARY and slot_id ~= SLOT_SECONDARY then
             
-            local settings = ItemSlotSettings[slot_id]
+--             local settings = ItemSlotSettings[slot_id]
 
-            if not ignored_slots[slot_id] and not settings.ignore_character_spawning then
-                gear_slots[slot_id] = config
-            end
+--             if not ignored_slots[slot_id] and not settings.ignore_character_spawning then
+--                 gear_slots[slot_id] = config
+--             end
 
-        end
+--         end
 
-	end
+-- 	end
 
-	if self._visible then
-		self:_update_items_visibility()
-	end
-end)
+-- 	if self._visible then
+-- 		self:_update_items_visibility()
+-- 	end
+-- end)
 
 mod:hook(CLASS.UIProfileSpawner, "spawn_profile", function(func, self, profile, position, rotation, scale, state_machine_or_nil, animation_event_or_nil, face_state_machine_key_or_nil, face_animation_event_or_nil, force_highest_mip_or_nil, disable_hair_state_machine_or_nil, optional_unit_3p, optional_ignore_state_machine, companion_data, ...)
     -- Unset ignore slots

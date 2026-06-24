@@ -25,7 +25,7 @@ local VisibleEquipmentExtension = class("VisibleEquipmentExtension")
     local world = World
     local CLASS = CLASS
     local pairs = pairs
-    local world = World
+    -- local world = World  -- duplicate removed
     local table = table
     local string = string
     local rawget = rawget
@@ -592,10 +592,15 @@ VisibleEquipmentExtension.position_objects = function(self, apply_center_mass_of
     end
 end
 
+-- Cache shield detection per slot to avoid repeated table_contains calls
+local _shield_cache = {}
 VisibleEquipmentExtension.is_shield = function(self, slot)
     if slot and slot.item then
         local weapon_template = slot.item.weapon_template
-        return table_contains(SHIELD_WEAPONS, weapon_template)
+        if _shield_cache[weapon_template] == nil then
+            _shield_cache[weapon_template] = table_contains(SHIELD_WEAPONS, weapon_template) or false
+        end
+        return _shield_cache[weapon_template]
     end
 end
 
@@ -609,9 +614,10 @@ end
 
 VisibleEquipmentExtension.slot_placement = function(self, obj, slot)
     local name = self.names[slot][obj]
-    local item_type = slot.item and slot.item.item_type
-    local gear_id = mod:gear_id(slot.item)
-    local weapon_template = slot.item and slot.item.weapon_template
+    local slot_item = slot.item
+    local item_type = slot_item and slot_item.item_type
+    local gear_id = mod:gear_id(slot_item)
+    local weapon_template = slot_item and slot_item.weapon_template
 
     local backpack_name = self:get_backpack()
     local backpack_group = backpack_name and "backpack" or "default"
@@ -627,8 +633,6 @@ VisibleEquipmentExtension.slot_placement = function(self, obj, slot)
     if placement == "default" and backpack_group == "backpack" then placement = "backpack" end
     if placement == "backpack" and backpack_group == "default" then placement = "default" end
 
-    -- mod:echo("placement "..tostring(weapon_template).." "..tostring(name).." "..tostring(placement))
-
     return placement
 
 end
@@ -636,13 +640,12 @@ end
 VisibleEquipmentExtension.slot_offset = function(self, obj, slot)
     -- Get offset
     local name = self.names[slot][obj]
-    local item_type = slot.item and slot.item.item_type
-    local weapon_template = slot.item and slot.item.weapon_template
-    -- local gear_id = slot.item and slot.item.gear_id
-    local gear_id = mod:gear_id(slot.item)
-    -- local breed_name = slot.breed_name
+    local slot_item = slot.item
+    local item_type = slot_item and slot_item.item_type
+    local weapon_template = slot_item and slot_item.weapon_template
+    local gear_id = mod:gear_id(slot_item)
     local breed_name = self:get_breed()
-    -- Check backpack
+    -- Check backpack (call once, reuse result)
     local backpacks = self.settings.backpacks
     local backpack_name = self:get_backpack()
     local backpack_table = backpack_name and backpacks[backpack_name] or backpacks.default
@@ -655,13 +658,9 @@ VisibleEquipmentExtension.slot_offset = function(self, obj, slot)
     local placement = self:slot_placement(obj, slot)
 
     local item_type_offsets = self.settings.offsets[item_type]
-    local breed_item_offsets = self.settings.offsets[breed_name][item_type]
+    local breed_item_offsets = self.settings.offsets[breed_name] and self.settings.offsets[breed_name][item_type] or self.settings.offsets.default
 
     local offset = item_offset and item_offset[placement] and item_offset[placement][name]
-
-    -- if not offset then
-    --      mod:echo("offset "..tostring(weapon_template).." "..tostring(placement).." "..tostring(name).." "..tostring(offset and offset.position))
-    -- end
 
     offset = offset or (item_offset and item_offset[backpack_group] and item_offset[backpack_group][name]) or
         (item_type_offsets and item_type_offsets[backpack_group] and item_type_offsets[backpack_group][name]) or
@@ -669,18 +668,21 @@ VisibleEquipmentExtension.slot_offset = function(self, obj, slot)
         (item_type_offsets and item_type_offsets[name])
     
     -- Breed offsets
-    -- local breed_item_offsets = self.settings.offsets[breed_name][item_type]
     offset = offset or (breed_item_offsets and breed_item_offsets[backpack_group] and (breed_item_offsets[backpack_group][name] or breed_item_offsets[backpack_group].right))
     offset = offset or (breed_item_offsets and breed_item_offsets.default and (breed_item_offsets.default[name] or breed_item_offsets.default.right))
-
-    -- if offset then
-    --     mod:echo("offset "..tostring(placement).." "..tostring(name).." "..tostring(offset.position))
-    -- end
 
     return offset, backpack_values
 end
 
 VisibleEquipmentExtension.position_slot_objects = function(self, slot, apply_center_mass_offset)
+    -- Cache world reference once
+    local world = self.equipment_component._world
+    local unit = self.unit
+    local names = self.names[slot]
+    local always_visible = self.always_visible[slot]
+    local always_visible_offset = self.always_visible_offset[slot]
+    local anim = self.anim[slot]
+    local unit_center_point = self.unit_center_point[slot]
     -- Iterate through objects
     for index, obj in pairs(self.objects[slot]) do
 
@@ -691,7 +693,7 @@ VisibleEquipmentExtension.position_slot_objects = function(self, slot, apply_cen
         local offset, backpack_values = self:slot_offset(obj, slot)
         -- Node
         local node_name = offset and offset.node or "j_spine2"
-        self.node[slot][obj] = unit_has_node(self.unit, node_name) and unit_node(self.unit, node_name)
+        self.node[slot][obj] = unit_has_node(unit, node_name) and unit_node(unit, node_name)
         -- Position and rotation
         local position = offset and offset.position and vector3_unbox(offset.position) or vector3_zero()
         local rotation = offset and offset.rotation and vector3_unbox(offset.rotation) or vector3_zero()
@@ -708,73 +710,72 @@ VisibleEquipmentExtension.position_slot_objects = function(self, slot, apply_cen
             local children = unit_get_child_units(obj)
             if children and #children > 0 then
                 for _, child in pairs(children) do
-                    local rotation = unit_local_rotation(child, 1)
-                    local mat = quaternion_matrix4x4(rotation)
+                    local rot = unit_local_rotation(child, 1)
+                    local mat = quaternion_matrix4x4(rot)
                     local rotated_center_mass_offset = matrix4x4_transform(mat, center_mass_offset)
                     unit_set_local_position(child, 1, rotated_center_mass_offset)
                 end
             else
-                local rotation = unit_local_rotation(obj, 1)
-                local mat = quaternion_matrix4x4(rotation)
+                local rot = unit_local_rotation(obj, 1)
+                local mat = quaternion_matrix4x4(rot)
                 local rotated_center_mass_offset = matrix4x4_transform(mat, center_mass_offset)
                 position = position + rotated_center_mass_offset
             end
 
-            local rotation = unit_local_rotation(obj, 1)
-            local mat = quaternion_matrix4x4(rotation)
+            local rot = unit_local_rotation(obj, 1)
+            local mat = quaternion_matrix4x4(rot)
             local rotated_center_mass_offset = matrix4x4_transform(mat, center_mass_offset)
-            unit_set_local_position(self.unit_center_point[slot][obj], 1, rotated_center_mass_offset)
+            unit_set_local_position(unit_center_point[obj], 1, rotated_center_mass_offset)
         end
 
         -- Link visible equipment
-        local world = self.equipment_component._world
         world_unlink_unit(world, obj)
-        world_link_unit(world, obj, 1, self.unit, self.node[slot][obj])
+        world_link_unit(world, obj, 1, unit, self.node[slot][obj])
         -- Set offset
-        local name = self.names[slot][obj]
-        -- mod:echo("offset "..tostring(name).." "..tostring(position))
         unit_set_local_position(obj, 1, position)
         unit_set_local_rotation(obj, 1, quaternion_from_vector(rotation))
         unit_set_local_scale(obj, 1, scale)
 
         -- Weapon customization
         if self.extended_weapon_customization then
-            local item_unit = self.pt.item_units_by_equipment_component[self.equipment_component][slot.name]
-            local attachment_units = self.pt.attachment_units_by_equipment_component[self.equipment_component][slot.name]
-            local attachment_names = self.pt.unit_attachment_names_by_equipment_component[self.equipment_component][slot.name]
+            local ec = self.equipment_component
+            local item_unit = self.pt.item_units_by_equipment_component[ec][slot.name]
+            local attachment_units = self.pt.attachment_units_by_equipment_component[ec][slot.name]
+            local attachment_names = self.pt.unit_attachment_names_by_equipment_component[ec][slot.name]
             self.extended_weapon_customization:apply_unit_fixes(slot.item, item_unit, attachment_units, attachment_names, self.fixes[slot])
         end
 
         -- Always visible
-        for attachment_unit, _ in pairs(self.always_visible[slot]) do
+        for attachment_unit, _ in pairs(always_visible) do
             local item_unit = self.pt.item_units_by_equipment_component[self.equipment_component][slot.name]
-            local offset = unit_world_position(item_unit, 1) - unit_world_position(obj, 1)
+            local av_offset = unit_world_position(item_unit, 1) - unit_world_position(obj, 1)
 
             world_unlink_unit(world, attachment_unit)
-            world_link_unit(world, attachment_unit, 1, self.unit, self.node[slot][obj])
+            world_link_unit(world, attachment_unit, 1, unit, self.node[slot][obj])
 
             local mat = quaternion_matrix4x4(quaternion_from_vector(rotation))
             local rotated_offset = matrix4x4_transform(mat, vector3(0, 0, -.06))
 
-            unit_set_local_position(attachment_unit, 1, position - offset + rotated_offset)
+            unit_set_local_position(attachment_unit, 1, position - av_offset + rotated_offset)
             unit_set_local_rotation(attachment_unit, 1, quaternion_from_vector(rotation))
             unit_set_local_scale(attachment_unit, 1, scale)
 
-            self.always_visible_offset[slot][attachment_unit] = vector3_box(0, 0, -.06)
+            always_visible_offset[attachment_unit] = vector3_box(0, 0, -.06)
         end
 
         -- Manipulation
         self:_add_unit_manipulation(slot)
         
         -- Anim values
-        self.anim[slot].default_position[obj]:store(position)
-        self.anim[slot].default_rotation[obj]:store(rotation)
-        self.anim[slot].start_position[obj]:store(vector3_zero())
-        self.anim[slot].start_rotation[obj]:store(vector3_zero())
-        self.anim[slot].end_position[obj]:store(vector3_zero())
-        self.anim[slot].end_rotation[obj]:store(vector3_zero())
-        self.anim[slot].current_position[obj]:store(vector3_zero())
-        self.anim[slot].current_rotation[obj]:store(vector3_zero())
+        local zero = vector3_zero()
+        anim.default_position[obj]:store(position)
+        anim.default_rotation[obj]:store(rotation)
+        anim.start_position[obj]:store(zero)
+        anim.start_rotation[obj]:store(zero)
+        anim.end_position[obj]:store(zero)
+        anim.end_rotation[obj]:store(zero)
+        anim.current_position[obj]:store(zero)
+        anim.current_rotation[obj]:store(zero)
 
     end
 end
@@ -892,7 +893,9 @@ VisibleEquipmentExtension.play_equipment_slot_sound = function(self, slot, effec
             return
         end
         -- Get sounds
-        local sounds =  self.settings.sounds[weapon_template] or self.settings.sounds[breed_name][item_type] or self.settings.sounds.default[item_type]
+        local sounds =  self.settings.sounds[weapon_template]
+            or (self.settings.sounds[breed_name] and self.settings.sounds[breed_name][item_type])
+            or self.settings.sounds.default[item_type]
         local group = nil
         -- Get character state
         if sounds then
@@ -964,10 +967,14 @@ VisibleEquipmentExtension.footstep_interval = function(self, slot)
         local footstep_intervals = breed_footstep_intervals and breed_footstep_intervals[slot.breed_name] or weapon_template.footstep_intervals
         -- Get interval
         if footstep_intervals then
-            local character_state_name = self.character_state_component and self.character_state_component.state_name or "walking"
-            local is_crouching = self.movement_state_component and self.movement_state_component.is_crouching or false
-            local alternate_fire_active = self.alternate_fire_component and self.alternate_fire_component.is_active or false
-            local sprint_sprint_overtime = self.sprint_character_state_component and self.sprint_character_state_component.sprint_overtime or 0
+            local char_state = self.character_state_component
+            local move_state = self.movement_state_component
+            local alt_fire = self.alternate_fire_component
+            local sprint_state = self.sprint_character_state_component
+            local character_state_name = char_state and char_state.state_name or "walking"
+            local is_crouching = move_state and move_state.is_crouching or false
+            local alternate_fire_active = alt_fire and alt_fire.is_active or false
+            local sprint_sprint_overtime = sprint_state and sprint_state.sprint_overtime or 0
             if character_state_name == "sprinting" then
                 interval = sprint_sprint_overtime > 0 and footstep_intervals.sprinting_overtime or footstep_intervals.sprinting
             elseif character_state_name == "walking" then
@@ -985,13 +992,17 @@ VisibleEquipmentExtension.footstep_interval = function(self, slot)
 end
 
 VisibleEquipmentExtension.update = function(self, dt, t)
+    -- Cache frequently accessed fields
+    local first_person_extension = self.first_person_extension
+    local objects = self.objects
+    local animations = self.animations
+
     -- Calculate rotation difference
-	local first_person_unit = self.first_person_extension and self.first_person_extension:first_person_unit()
+	local first_person_unit = first_person_extension and first_person_extension:first_person_unit()
     local rotation_unit = (not mod:is_in_hub() and first_person_unit) or self.unit
     local rotation = quaternion_to_vector(unit_world_rotation(rotation_unit, 1))
     local min, max = -10, 10
     local momentum = math_clamp((vector3_unbox(self.rotation) - rotation)[3], min, max)
-    -- local ease = math.ease_out_elastic(dt)
     if (momentum > 0 and momentum > self.momentum) or (momentum < 0 and momentum < self.momentum) then
         self._momentum_delay = t + .1
         self.momentum = math_lerp(self.momentum, momentum, dt * 2)
@@ -1001,29 +1012,31 @@ VisibleEquipmentExtension.update = function(self, dt, t)
     
     self.rotation:store(rotation)
 
+    -- Cache visibility state once per frame
     local player_visibility = script_unit_has_extension(self.unit, "player_visibility_system")
     local player_invisible = player_visibility and not player_visibility:visible()
-    local in_first_person = self.first_person_extension and self.first_person_extension:is_in_first_person_mode()
+    local in_first_person = first_person_extension and first_person_extension:is_in_first_person_mode()
+    local visible_flag = not player_invisible and not in_first_person
 
     -- Iterate through equipment
-    for slot, units in pairs(self.objects) do
+    for slot, units in pairs(objects) do
         -- Update accent
         if self.accent[slot] and self.accent[slot] < t then
             self.accent[slot] = nil
         end
         -- Update animation
-        if self.animations then
+        if animations then
             -- Update animation interval
-            for index, obj in pairs(self.objects[slot]) do
-                self.anim[slot].interval[obj] = self:footstep_interval(slot)
+            local footstep_iv = self:footstep_interval(slot)
+            for index, obj in pairs(objects[slot]) do
+                self.anim[slot].interval[obj] = footstep_iv
             end
             -- Update animation
             self:update_animation(dt, t, slot)
         end
         -- Always visible
         for attachment_unit, _ in pairs(self.always_visible[slot]) do
-            -- mod:echo("show: "..tostring(attachment_unit))
-            unit_set_unit_visibility(attachment_unit, not player_invisible and not in_first_person, true)
+            unit_set_unit_visibility(attachment_unit, visible_flag, true)
         end
     end
 
@@ -1031,7 +1044,7 @@ VisibleEquipmentExtension.update = function(self, dt, t)
         local visual_loadout_extension = script_unit_extension(self.unit, "visual_loadout_system")
         if visual_loadout_extension then
             -- Iterate through equipment
-            for slot, units in pairs(self.objects) do
+            for slot, units in pairs(objects) do
                 self:update_hidden_units(slot)
             end
             self.delayed_update_hidden_units = nil
@@ -1061,23 +1074,29 @@ end
 VisibleEquipmentExtension.animate_slot = function(self, slot, animation, strength_override)
     -- Exit when animations are not enabled
     if not self.animations then return end
-    local item_type = slot.item and slot.item.item_type
+    local slot_item = slot.item
+    local item_type = slot_item and slot_item.item_type
     if SPECIAL_SLOT_PLACEMENTS[item_type] then
         return
     end
+    -- Cache animation table lookup
+    local settings_animations = self.settings.animations
+    local animation_table = settings_animations[slot_item.weapon_template] or
+        (settings_animations[slot.breed_name] and settings_animations[slot.breed_name][item_type]) or
+        settings_animations.default
+    local anim_for_name = animation_table[animation]
     -- Animate, iterate through slot objects
+    local anim = self.anim[slot]
+    local names = self.names[slot]
     for index, obj in pairs(self.objects[slot]) do
         -- Get animation
-        local anim = self.anim[slot]
-        local name = self.names[slot][obj]
-        local animation_table = self.settings.animations[slot.item.weapon_template] or
-            self.settings.animations[slot.breed_name][slot.item.item_type] or
-            self.settings.animations.default
-        local specific_animation = animation_table[animation] and animation_table[animation][name]
+        local name = names[obj]
+        local specific_animation = anim_for_name and anim_for_name[name]
         local new_animation = specific_animation or animation_table[name]
         if new_animation then
             -- Check animation requirements
-            if not anim.current[obj] or new_animation.interrupt or not anim.current[obj].interrupt then
+            local anim_current = anim.current[obj]
+            if not anim_current or new_animation.interrupt or not anim_current.interrupt then
                 -- Set animation
                 anim.previous[obj] = new_animation
                 anim.current[obj] = new_animation
@@ -1094,75 +1113,83 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t, slot)
     self.modding_tools_were_busy = self.modding_tools_were_busy or (self.modding_tools and self.modding_tools:unit_manipulation_busy())
     if not self.modding_tools_were_busy then
         
+        -- Cache slot-level data outside the obj loop
+        local slot_item = slot.item
+        local slot_item_type = slot_item.item_type
+        local slot_weapon_template = slot_item.weapon_template
+        local slot_breed_name = slot.breed_name
+        local slot_name = slot.name
+        local wielded_slot = self.wielded_slot
+        local from_ui_profile_spawner = self.from_ui_profile_spawner
+        local anim = self.anim[slot]
+        local names = self.names[slot]
+        local always_visible = self.always_visible[slot]
+        local always_visible_offset = self.always_visible_offset[slot]
+        local settings_momentum = self.settings.momentum
+        local item_momentum = settings_momentum[slot_weapon_template]
+        local item_type_momentum = settings_momentum[slot_item_type] or settings_momentum.default
+        local locomotion_extension = self.locomotion_extension
+        local first_person_extension = self.first_person_extension
+        local in_fp = first_person_extension and first_person_extension:is_in_first_person_mode()
+
+        -- Compute momentum/angle once per slot update
+        local angle = self.momentum
+        angle = angle % 360
+        angle = (angle + 360) % 360
+        if angle > 180 then angle = angle - 360 end
+        if not from_ui_profile_spawner then angle = angle * -1 end
+
+        local multiplier = from_ui_profile_spawner and -2 or 2
+        if wielded_slot == slot_name then multiplier = multiplier * 2 end
+
+        local placement = nil -- computed per obj when needed
+        local right_foot_next = self.right_foot_next
+        if in_fp then
+            right_foot_next = first_person_extension._right_foot_next
+        end
+
         -- Iterate through objects
         for index, obj in pairs(self.objects[slot]) do
-            -- Swing
-            local angle = self.momentum
-            -- reduce the angle
-            angle = angle % 360
-            -- force it to be the positive remainder, so that 0 <= angle < 360
-            angle = (angle + 360) % 360
-            -- force into the minimum absolute value residue class, so that -180 < angle <= 180
-            if angle > 180 then angle = angle - 360 end
-            -- angle = angle * weight_factor
-            if not self.from_ui_profile_spawner then
-                angle = angle * -1
-            end
             -- Momentum vector
-            local item_momentum = self.settings.momentum[slot.item.weapon_template]
-            local side_momentum = item_momentum and item_momentum[self.names[slot][obj]]
-            local item_type_momentum = self.settings.momentum[slot.item.item_type] or
-                self.settings.momentum.default
-            local default_momentum = item_type_momentum and item_type_momentum[self.names[slot][obj]]
+            local obj_name = names[obj]
+            local side_momentum = item_momentum and item_momentum[obj_name]
+            local default_momentum = item_type_momentum and item_type_momentum[obj_name]
             local momentum = (side_momentum and side_momentum.momentum) or
                 (default_momentum and default_momentum.momentum)
             local momentum_vector = momentum and vector3_unbox(momentum) or vector3_zero()
 
-            local placement = self:slot_placement(obj, slot)
+            if not placement then
+                placement = self:slot_placement(obj, slot)
+            end
 
-            -- Calculate momentum_drag 
-            -- local momentum_drag = vector3_zero()
-            local multiplier = self.from_ui_profile_spawner and -2 or 2
-            if self.wielded_slot == slot.name then multiplier = multiplier * 2 end
+            -- Calculate momentum_drag
             local momentum_drag = (momentum_vector * angle) * multiplier
             momentum_drag[1] = math_abs(momentum_drag[1])
-            -- Get foot side
-            local right_foot_next = self.right_foot_next
-            -- Check if first person extension is set up
-            if self.first_person_extension and self.first_person_extension:is_in_first_person_mode() then
-                -- Get foot side
-                right_foot_next = self.first_person_extension._right_foot_next
-            end
-            
-            local anim = self.anim[slot]
+
+            local anim_obj_current = anim.current[obj]
             -- Check for current active animation
-            if anim.current[obj] then
+            if anim_obj_current then
                 -- Check if not started yet
                 if not anim.started[obj] then
                     -- Get start state
-                    local start_state = anim.current[obj].start
+                    local start_state = anim_obj_current.start
                     -- Set start state
-                    anim.state[obj] = anim.current[obj][start_state] and anim.current[obj][start_state][placement] or anim.current[obj][start_state]
+                    anim.state[obj] = anim_obj_current[start_state] and anim_obj_current[start_state][placement] or anim_obj_current[start_state]
                 -- Check if started
-                elseif anim.started[obj] then
-                    -- Check timer if elapsed
-                    if anim.ending[obj] < t then
-                        -- Get next state
-                        local next_state = anim.state[obj].next
-                        -- Set next state
-                        anim.state[obj] = anim.current[obj][next_state] and anim.current[obj][next_state][placement] or anim.current[obj][next_state]
-                        -- Reset timer
-                        anim.started[obj] = nil
-                        -- Reset strength
-                        anim.strength_override[obj] = nil
-                    end
+                elseif anim.ending[obj] < t then
+                    -- Get next state
+                    local next_state = anim.state[obj].next
+                    -- Set next state
+                    anim.state[obj] = anim_obj_current[next_state] and anim_obj_current[next_state][placement] or anim_obj_current[next_state]
+                    -- Reset timer
+                    anim.started[obj] = nil
+                    -- Reset strength
+                    anim.strength_override[obj] = nil
                 end
 
                 -- Get interval
-                local states = anim.current[obj].states
-                local interval = anim.current[obj].interval or self:footstep_interval(slot) / states --anim.interval[obj] / states
-                -- if self.sheathing[slot] then interval = 2 end
-                -- local interval = anim.interval[obj] / states
+                local states = anim_obj_current.states
+                local interval = anim_obj_current.interval or self:footstep_interval(slot) / states
                 -- Get state
                 local state = anim.state[obj]
 
@@ -1176,8 +1203,6 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t, slot)
                     anim.start_rotation[obj] = state.start_rotation
                     anim.end_position[obj] = state.end_position
                     anim.end_rotation[obj] = state.end_rotation
-
-                    -- self.sheathing[slot] = nil
 
                 -- Check state is not valid
                 elseif not state then
@@ -1195,24 +1220,26 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t, slot)
                     local progress = ((anim.started[obj] + interval) - t) / interval
                     local anim_progress = math_ease_cubic(1 - progress)
                     -- Get move speed multiplier
-                    local move_speed = self.locomotion_extension and self.locomotion_extension:move_speed() or 1
+                    local move_speed = locomotion_extension and locomotion_extension:move_speed() or 1
                     -- Get foot multiplier
                     local foot_multiplier = 1
                     if move_speed == 0 then
                         move_speed = 1
-                    elseif slot.item.item_type == WEAPON_MELEE or slot.item.item_type == POCKETABLE_SMALL then
+                    elseif slot_item_type == WEAPON_MELEE or slot_item_type == POCKETABLE_SMALL then
                         foot_multiplier = right_foot_next and 1 or .25
-                    elseif slot.item.item_type == WEAPON_RANGED or slot.item.item_type == POCKETABLE then
+                    elseif slot_item_type == WEAPON_RANGED or slot_item_type == POCKETABLE then
                         foot_multiplier = right_foot_next and .25 or 1
                     end
                     -- Get strength multiplier
                     local start_strength = move_speed * foot_multiplier
                     local end_strength = move_speed * foot_multiplier
-                    if anim.strength_override[obj] then
-                        if state.name == "step" then
-                            end_strength = anim.strength_override[obj]
-                        elseif state.name == "back" then
-                            start_strength = anim.strength_override[obj]
+                    local strength_override = anim.strength_override[obj]
+                    if strength_override then
+                        local state_name = state.name
+                        if state_name == "step" then
+                            end_strength = strength_override
+                        elseif state_name == "back" then
+                            start_strength = strength_override
                         end
                     end
                     -- No modifier
@@ -1246,11 +1273,11 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t, slot)
                     unit_set_local_rotation(obj, 1, rotation)
                     -- Always visible
                     if anim.name[obj] ~= "sheath" then
-                        for attachment_unit, _ in pairs(self.always_visible[slot]) do
-                            local offset = self.always_visible_offset[slot][attachment_unit]
+                        for attachment_unit, _ in pairs(always_visible) do
+                            local av_offset = always_visible_offset[attachment_unit]
                             local mat = quaternion_matrix4x4(rotation)
-                            offset = offset and matrix4x4_transform(mat, vector3_unbox(offset)) or vector3_zero()
-                            unit_set_local_position(attachment_unit, 1, position + offset)
+                            av_offset = av_offset and matrix4x4_transform(mat, vector3_unbox(av_offset)) or vector3_zero()
+                            unit_set_local_position(attachment_unit, 1, position + av_offset)
                             unit_set_local_rotation(attachment_unit, 1, rotation)
                         end
                     end
@@ -1261,13 +1288,12 @@ VisibleEquipmentExtension.update_animation = function(self, dt, t, slot)
             local current_position = vector3_unbox(anim.current_position[obj])
             local current_rotation = vector3_unbox(anim.current_rotation[obj])
             -- Calculate final positions and rotations
-            -- local position = vector3_unbox(anim.default_position[obj]) + unit_local_position(self.unit, 1)
             local position = vector3_unbox(anim.default_position[obj]) + current_position
             local rotation = vector3_unbox(anim.default_rotation[obj]) + current_rotation
             -- Set final positions and rotations
             unit_set_local_position(obj, 1, position)
             local mat = quaternion_matrix4x4(quaternion_from_vector(rotation))
-            local rotated_pos = matrix4x4_transform(mat, momentum_drag) --* 4
+            local rotated_pos = matrix4x4_transform(mat, momentum_drag)
             rotation = quaternion_multiply(quaternion_from_vector(rotation), quaternion_from_vector(rotated_pos))
             unit_set_local_rotation(obj, 1, rotation)
             -- Always visible

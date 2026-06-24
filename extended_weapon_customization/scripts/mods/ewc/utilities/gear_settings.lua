@@ -4,9 +4,9 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ├┬┘├┤ │─┼┐│ ││├┬┘├┤  #########################################################################################
 -- ##### ┴└─└─┘└─┘└└─┘┴┴└─└─┘ #########################################################################################
 
-local ItemMaterialOverridesGearMaterials = mod:original_require("scripts/settings/equipment/item_material_overrides/item_material_overrides_gear_materials")
-local ItemMaterialOverridesGearPatterns = mod:original_require("scripts/settings/equipment/item_material_overrides/item_material_overrides_gear_patterns")
-local ItemMaterialOverridesGearColors = mod:original_require("scripts/settings/equipment/item_material_overrides/item_material_overrides_gear_colors")
+-- local ItemMaterialOverridesGearMaterials = mod:original_require("scripts/settings/equipment/item_material_overrides/item_material_overrides_gear_materials")
+-- local ItemMaterialOverridesGearPatterns = mod:original_require("scripts/settings/equipment/item_material_overrides/item_material_overrides_gear_patterns")
+-- local ItemMaterialOverridesGearColors = mod:original_require("scripts/settings/equipment/item_material_overrides/item_material_overrides_gear_colors")
 local master_items = mod:original_require("scripts/backend/master_items")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
@@ -102,9 +102,9 @@ mod.item_from_material_name = function(self, material_override)
 end
 
 mod.override_type = function(self, material_override)
-    if ItemMaterialOverridesGearColors[material_override] then return OVERRIDE_TYPE.color end
-    if ItemMaterialOverridesGearPatterns[material_override] then return OVERRIDE_TYPE.pattern end
-    if ItemMaterialOverridesGearMaterials[material_override] then return OVERRIDE_TYPE.wear end
+    -- if ItemMaterialOverridesGearColors[material_override] then return OVERRIDE_TYPE.color end
+    -- if ItemMaterialOverridesGearPatterns[material_override] then return OVERRIDE_TYPE.pattern end
+    -- if ItemMaterialOverridesGearMaterials[material_override] then return OVERRIDE_TYPE.wear end
 end
 
 mod.remove_override_type = function(self, material_overrides, remove_type)

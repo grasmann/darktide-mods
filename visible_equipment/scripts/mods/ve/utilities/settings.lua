@@ -5,6 +5,7 @@ local mod = get_mod("visible_equipment")
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
 return {
+    compatibility = {},
     placement_camera = mod:io_dofile("visible_equipment/scripts/mods/ve/utilities/placement_cameras"),
     hide_attachments = mod:io_dofile("visible_equipment/scripts/mods/ve/utilities/hide_attachments"),
     animations = mod:io_dofile("visible_equipment/scripts/mods/ve/utilities/animations"),

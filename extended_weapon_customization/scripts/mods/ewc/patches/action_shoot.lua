@@ -6,6 +6,8 @@ local mod = get_mod("extended_weapon_customization")
 
 local VisualLoadoutCustomization = mod:original_require("scripts/extension_systems/visual_loadout/utilities/visual_loadout_customization")
 local MultiFireModes = mod:original_require("scripts/settings/equipment/weapon_templates/multi_fire_modes")
+local PowerLevelSettings = mod:original_require("scripts/settings/damage/power_level_settings")
+local BuffSettings = mod:original_require("scripts/settings/buff/buff_settings")
 local HitScan = mod:original_require("scripts/utilities/attack/hit_scan")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
@@ -43,6 +45,8 @@ local IMPACT_FX_DATA = {
 }
 local EXTERNAL_PROPERTIES = {}
 local damage_type_active_setting = "damage_type_active"
+local DEFAULT_POWER_LEVEL = PowerLevelSettings.default_power_level
+local proc_events = BuffSettings.proc_events
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌┌─┐ ####################################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││└─┐ ####################################################################################
@@ -73,6 +77,33 @@ local function _damage_type_active(action)
     return damage_type_active_list and gear_id and damage_type_active_list[gear_id]
 end
 
+local function _find_line_effect(fx_settings, charge_level)
+	if not fx_settings then
+		return nil
+	end
+
+	local line_effect_to_play = fx_settings.line_effect
+	local is_charge_dependant = fx_settings.is_charge_dependant
+
+	if is_charge_dependant then
+		local line_effect_table = line_effect_to_play
+
+		line_effect_to_play = nil
+
+		for i = 1, #line_effect_table do
+			local entry = line_effect_table[i]
+			local required_charge = entry.charge_level
+			local line_effect = entry.line_effect
+
+			if required_charge <= charge_level then
+				line_effect_to_play = line_effect
+			end
+		end
+	end
+
+	return line_effect_to_play
+end
+
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌  ┬ ┬┌─┐┌─┐┬┌─┌─┐ ######################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││  ├─┤│ ││ │├┴┐└─┐ ######################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘  ┴ ┴└─┘└─┘┴ ┴└─┘ ######################################################################
@@ -95,9 +126,11 @@ local shoot_hook = function(func, self, position, rotation, power_level, charge_
         local is_critical_strike = self._critical_strike_component.is_active
         local direction = quaternion_forward(rotation)
         local instakill = false
-        local end_position, hit_weakspot, killing_blow, num_hit_units
+        local end_position, hit_elite, hit_weakspot, killing_blow, hit_minion, num_hit_units, hit_scan_result, hit_results_per_unit
         local rewind_ms = self:_rewind_ms(is_local_unit, player, position, direction, max_distance)
         local collision_tests = hit_scan_template.collision_tests
+
+        power_level = hit_scan_template.power_level or power_level or DEFAULT_POWER_LEVEL
 
         if collision_tests then
             table_clear(ALL_HITS)
@@ -126,13 +159,51 @@ local shoot_hook = function(func, self, position, rotation, power_level, charge_
 
             table_sort(ALL_HITS, _hit_sort_function)
 
-            end_position, hit_weakspot, killing_blow, hit_minion, num_hit_units = HitScan.process_hits(is_server, world, physics_world, player_unit, fire_config, ALL_HITS, position, direction, power_level, charge_level, IMPACT_FX_DATA, max_distance, debug_drawer, is_local_unit, player, instakill, is_critical_strike, weapon_item, wielded_slot)
+            -- end_position, hit_weakspot, killing_blow, hit_minion, num_hit_units = HitScan.process_hits(is_server, world, physics_world, player_unit, fire_config, ALL_HITS, position, direction, power_level, charge_level, IMPACT_FX_DATA, max_distance, debug_drawer, is_local_unit, player, instakill, is_critical_strike, weapon_item, wielded_slot)
+            end_position, hit_elite, hit_weakspot, killing_blow, hit_minion, num_hit_units, hit_scan_result, hit_results_per_unit = HitScan.process_hits(is_server, world, physics_world, player_unit, fire_config, ALL_HITS, position, direction, power_level, charge_level, IMPACT_FX_DATA, max_distance, debug_drawer, is_local_unit, player, instakill, is_critical_strike, weapon_item, wielded_slot, true)
         else
             local hits = HitScan.raycast(physics_world, position, direction, max_distance, nil, nil, rewind_ms, is_local_unit, player, is_server)
 
-            end_position, hit_weakspot, killing_blow, hit_minion, num_hit_units = HitScan.process_hits(is_server, world, physics_world, player_unit, fire_config, hits, position, direction, power_level, charge_level, IMPACT_FX_DATA, max_distance, debug_drawer, is_local_unit, player, instakill, is_critical_strike, weapon_item, wielded_slot)
+            -- end_position, hit_weakspot, killing_blow, hit_minion, num_hit_units = HitScan.process_hits(is_server, world, physics_world, player_unit, fire_config, hits, position, direction, power_level, charge_level, IMPACT_FX_DATA, max_distance, debug_drawer, is_local_unit, player, instakill, is_critical_strike, weapon_item, wielded_slot)
+            end_position, hit_elite, hit_weakspot, killing_blow, hit_minion, num_hit_units, hit_scan_result, hit_results_per_unit = HitScan.process_hits(is_server, world, physics_world, player_unit, fire_config, hits, position, direction, power_level, charge_level, IMPACT_FX_DATA, max_distance, debug_drawer, is_local_unit, player, instakill, is_critical_strike, weapon_item, wielded_slot, true)
         end
+
+        if self._do_chain_lightning_on_shoot and #hit_results_per_unit > 0 then
+            self:_try_make_chain_from_shoot(hit_results_per_unit, t)
+        end
+
+        local action_component = self._action_component
+        local attacker_buff_extension = ScriptUnit.extension(player_unit, "buff_system")
+        local param_table = attacker_buff_extension:request_proc_event_param_table()
+
+        if param_table then
+            param_table.attacking_unit = player_unit
+            param_table.num_shots_fired = action_component.num_shots_fired
+            param_table.combo_count = self._combo_count
+            param_table.hit_elite = hit_elite
+            param_table.hit_weakspot = hit_weakspot
+            param_table.num_hit_units = num_hit_units
+            param_table.is_critical_strike = is_critical_strike
+
+            attacker_buff_extension:add_proc_event(proc_events.on_shoot, param_table)
+        end
+
+        end_position = end_position or position + direction * max_distance
+
+        local fx_settings = action_settings.fx
+        local line_effect = _find_line_effect(fx_settings, charge_level)
+
+        self:_play_line_fx(line_effect, position, end_position, self:_reference_attachment_id(fire_config))
+
+        local shot_result = self._shot_result
+
+        shot_result.data_valid = true
+        shot_result.hit_minion = hit_minion
+        shot_result.hit_weakspot = hit_weakspot
+        shot_result.killing_blow = killing_blow
+
     end
+    
     -- Get damage type
     local damage_type = _damage_type(self)
     local use_damage_type = _damage_type_active(self)
@@ -141,8 +212,10 @@ local shoot_hook = function(func, self, position, rotation, power_level, charge_
         -- Override damage type
         mod.enemy_unit_damage_type_override[hit_minion] = damage_type.game_damage_type
     end
+
     -- Original function
     func(self, position, rotation, power_level, charge_level, t, fire_config, ...)
+
 end
 
 mod:hook(CLASS.ActionShoot, "_shoot", shoot_hook)
