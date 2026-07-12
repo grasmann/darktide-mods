@@ -6,6 +6,7 @@ local mod = get_mod("extended_weapon_customization")
 
 local master_items = mod:original_require("scripts/backend/master_items")
 -- local ItemMaterialOverrides = mod:original_require("scripts/settings/equipment/item_material_overrides/item_material_overrides")
+local ItemMaterialOverrides = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/legacy_material_overrides/item_material_overrides")
 
 -- ##### ┌─┐┌─┐┬─┐┌─┐┌─┐┬─┐┌┬┐┌─┐┌┐┌┌─┐┌─┐ ############################################################################
 -- ##### ├─┘├┤ ├┬┘├┤ │ │├┬┘│││├─┤││││  ├┤  ############################################################################
@@ -72,22 +73,22 @@ mod.kitbash_item = function(self, name, data)
                     ["content/characters/empty_item/empty_item"] = true,
                 }
 
-                -- if data.material_overrides then
-                --     for _, material_override_name in pairs(data.material_overrides) do
+                if data.material_overrides then
+                    for _, material_override_name in pairs(data.material_overrides) do
 
-                --         local material_override_data = ItemMaterialOverrides[material_override_name]
+                        local material_override_data = ItemMaterialOverrides[material_override_name]
 
-                --         if material_override_data and material_override_data.texture_overrides then
+                        if material_override_data and material_override_data.texture_overrides then
 
-                --             for texture_slot, texture_override_data in pairs(material_override_data.texture_overrides) do
-                --                 resource_dependencies[texture_override_data.resource] = true
-                --                 mod:print("added material override "..tostring(material_override_name).." resource "..tostring(texture_override_data.resource))
-                --             end
+                            for texture_slot, texture_override_data in pairs(material_override_data.texture_overrides) do
+                                resource_dependencies[texture_override_data.resource] = true
+                                mod:print("added material override "..tostring(material_override_name).." resource "..tostring(texture_override_data.resource))
+                            end
 
-                --         end
+                        end
 
-                --     end
-                -- end
+                    end
+                end
 
                 -- Add shared material overrides
                 if template.attachments then
@@ -110,22 +111,22 @@ mod.kitbash_item = function(self, name, data)
 
                             resource_dependencies = table_merge_recursive(resource_dependencies, item.resource_dependencies)
 
-                            -- if item.material_overrides then
-                            --     for _, material_override_name in pairs(item.material_overrides) do
+                            if item.material_overrides then
+                                for _, material_override_name in pairs(item.material_overrides) do
 
-                            --         local material_override_data = ItemMaterialOverrides[material_override_name]
+                                    local material_override_data = ItemMaterialOverrides[material_override_name]
 
-                            --         if material_override_data and material_override_data.texture_overrides then
+                                    if material_override_data and material_override_data.texture_overrides then
 
-                            --             for texture_slot, texture_override_data in pairs(material_override_data.texture_overrides) do
-                            --                 resource_dependencies[texture_override_data.resource] = true
-                            --                 mod:print("added material override "..tostring(material_override_name).." resource "..tostring(texture_override_data.resource))
-                            --             end
+                                        for texture_slot, texture_override_data in pairs(material_override_data.texture_overrides) do
+                                            resource_dependencies[texture_override_data.resource] = true
+                                            mod:print("added material override "..tostring(material_override_name).." resource "..tostring(texture_override_data.resource))
+                                        end
 
-                            --         end
+                                    end
 
-                            --     end
-                            -- end
+                                end
+                            end
                         end
                     end
 
@@ -162,22 +163,22 @@ mod.kitbash_item = function(self, name, data)
 
             local resource_dependencies = data.resource_dependencies or {}
 
-            -- if data.material_overrides then
-            --     for _, material_override_name in pairs(data.material_overrides) do
+            if data.material_overrides then
+                for _, material_override_name in pairs(data.material_overrides) do
 
-            --         local material_override_data = ItemMaterialOverrides[material_override_name]
+                    local material_override_data = ItemMaterialOverrides[material_override_name]
 
-            --         if material_override_data and material_override_data.texture_overrides then
+                    if material_override_data and material_override_data.texture_overrides then
 
-            --             for texture_slot, texture_override_data in pairs(material_override_data.texture_overrides) do
-            --                 resource_dependencies[texture_override_data.resource] = true
-            --                 mod:print("added material override "..tostring(material_override_name).." resource "..tostring(texture_override_data.resource))
-            --             end
+                        for texture_slot, texture_override_data in pairs(material_override_data.texture_overrides) do
+                            resource_dependencies[texture_override_data.resource] = true
+                            mod:print("added material override "..tostring(material_override_name).." resource "..tostring(texture_override_data.resource))
+                        end
 
-            --         end
+                    end
 
-            --     end
-            -- end
+                end
+            end
 
             if data.attachments then
 
@@ -200,22 +201,22 @@ mod.kitbash_item = function(self, name, data)
 
                         resource_dependencies = table_merge_recursive(resource_dependencies, item.resource_dependencies)
 
-                        -- if item.material_overrides then
-                        --     for _, material_override_name in pairs(item.material_overrides) do
+                        if item.material_overrides then
+                            for _, material_override_name in pairs(item.material_overrides) do
 
-                        --         local material_override_data = ItemMaterialOverrides[material_override_name]
+                                local material_override_data = ItemMaterialOverrides[material_override_name]
 
-                        --         if material_override_data and material_override_data.texture_overrides then
+                                if material_override_data and material_override_data.texture_overrides then
 
-                        --             for texture_slot, texture_override_data in pairs(material_override_data.texture_overrides) do
-                        --                 resource_dependencies[texture_override_data.resource] = true
-                        --                 mod:print("added material override "..tostring(material_override_name).." resource "..tostring(texture_override_data.resource))
-                        --             end
+                                    for texture_slot, texture_override_data in pairs(material_override_data.texture_overrides) do
+                                        resource_dependencies[texture_override_data.resource] = true
+                                        mod:print("added material override "..tostring(material_override_name).." resource "..tostring(texture_override_data.resource))
+                                    end
 
-                        --         end
+                                end
 
-                        --     end
-                        -- end
+                            end
+                        end
                     end
                 end
 

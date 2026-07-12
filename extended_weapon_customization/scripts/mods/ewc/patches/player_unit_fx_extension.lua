@@ -224,6 +224,56 @@ end
 -- ##### ├┤ │ │││││   │ ││ ││││  ├─┤│ ││ │├┴┐└─┐ ######################################################################
 -- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘  ┴ ┴└─┘└─┘┴ ┴└─┘ ######################################################################
 
+mod:hook(CLASS.PlayerUnitFxExtension, "sound_source", function(func, self, source_name, optional_attachment_name, ...)
+
+	-- Original function
+	local sound_source = self._sources[source_name]
+	local sound_source_id = func(self, source_name, optional_attachment_name, ...)
+
+	sound_source_id = sound_source_id or sound_source[VisualLoadoutExtractData.ROOT_ATTACH_NAME]
+
+	return sound_source_id
+
+end)
+
+mod:hook(CLASS.PlayerUnitFxExtension, "vfx_spawner_unit_and_node", function(func, self, spawner_name, optional_attachment_name, ...)
+	local vfx_spawner = self._vfx_spawners[spawner_name]
+	local reference_attachment_name = optional_attachment_name or VisualLoadoutExtractData.ROOT_ATTACH_NAME
+
+	vfx_spawner = vfx_spawner and vfx_spawner[reference_attachment_name] or vfx_spawner
+
+	if vfx_spawner then
+
+		-- Spawner found
+		return func(self, spawner_name, optional_attachment_name, ...)
+
+	else
+
+		-- Fallback to the first spawner in the group
+		for spawner, _ in pairs(self._vfx_spawners) do
+			vfx_spawner = spawner and spawner[reference_attachment_name] or spawner[VisualLoadoutExtractData.ROOT_ATTACH_NAME]
+			break
+		end
+
+		if vfx_spawner then
+
+			-- Fallback to the first spawner
+			local unit_3p = vfx_spawner.node_3p and self._unit or vfx_spawner.unit
+			local node_3p = vfx_spawner.node_3p or vfx_spawner.node
+
+			return vfx_spawner.unit, vfx_spawner.node, unit_3p, node_3p
+
+		else
+
+			-- Absolute fallback to the player unit and node 1 if no spawner is found
+			-- This is a last resort and should not happen in normal circumstances
+			return self._unit, 1, self._unit, 1
+
+		end
+	end
+
+end)
+
 mod:hook(CLASS.PlayerUnitFxExtension, "_register_vfx_spawner", function(func, self, spawners, spawner_name, parent_unit, attachments_by_unit, attachment_name_lookup, node_name, should_add_3p_node, ...)
 
     local result

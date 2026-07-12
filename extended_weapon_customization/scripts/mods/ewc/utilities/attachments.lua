@@ -142,7 +142,9 @@ end
     local dual_autopistols_p1_m1 = mod:io_dofile(weapons_folder.."dual_autopistols_p1_m1")
     local ogryn_rippergun_p1_m1 = mod:io_dofile(weapons_folder.."ogryn_rippergun_p1_m1")
     local ogryn_powermaul_p1_m1 = mod:io_dofile(weapons_folder.."ogryn_powermaul_p1_m1")
+    local phosphor_pistol_p1_m1 = mod:io_dofile(weapons_folder.."phosphor_pistol_p1_m1")
     local ogryn_gauntlet_p1_m1 = mod:io_dofile(weapons_folder.."ogryn_gauntlet_p1_m1")
+    local galvanic_rifle_p1_m1 = mod:io_dofile(weapons_folder.."galvanic_rifle_p1_m1")
     local forcesword_2h_p1_m1 = mod:io_dofile(weapons_folder.."forcesword_2h_p1_m1")
     local chainsword_2h_p1_m1 = mod:io_dofile(weapons_folder.."chainsword_2h_p1_m1")
     local ogryn_thumper_p1_m1 = mod:io_dofile(weapons_folder.."ogryn_thumper_p1_m1")
@@ -171,6 +173,7 @@ end
     local combataxe_p1_m1 = mod:io_dofile(weapons_folder.."combataxe_p1_m1")
     local combataxe_p2_m1 = mod:io_dofile(weapons_folder.."combataxe_p2_m1")
     local combataxe_p3_m1 = mod:io_dofile(weapons_folder.."combataxe_p3_m1")
+    local arc_rifle_p1_m1 = mod:io_dofile(weapons_folder.."arc_rifle_p1_m1")
     local chainaxe_p1_m1 = mod:io_dofile(weapons_folder.."chainaxe_p1_m1")
     local crowbar_p1_m1 = mod:io_dofile(weapons_folder.."crowbar_p1_m1")
     local autogun_p1_m1 = mod:io_dofile(weapons_folder.."autogun_p1_m1")
@@ -185,6 +188,10 @@ end
     local lasgun_p2_m1 = mod:io_dofile(weapons_folder.."lasgun_p2_m1")
     local lasgun_p3_m1 = mod:io_dofile(weapons_folder.."lasgun_p3_m1")
     local saw_p1_m1 = mod:io_dofile(weapons_folder.."saw_p1_m1")
+
+    local powermaul_p3_m1 = mod:io_dofile(weapons_folder.."powermaul_p3_m1")
+    local transonic_sword_transonic_knife_p1_m1 = mod:io_dofile(weapons_folder.."transonic_sword_transonic_knife_p1_m1")
+    local powersword_p3_m1 = mod:io_dofile(weapons_folder.."powersword_p3_m1")
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -204,7 +211,9 @@ local attachments = {
     dual_autopistols_p1_m1 = dual_autopistols_p1_m1.attachments,
     ogryn_rippergun_p1_m1 = ogryn_rippergun_p1_m1.attachments,
     ogryn_powermaul_p1_m1 = ogryn_powermaul_p1_m1.attachments,
+    phosphor_pistol_p1_m1 = phosphor_pistol_p1_m1.attachments,
     ogryn_gauntlet_p1_m1 = ogryn_gauntlet_p1_m1.attachments,
+    galvanic_rifle_p1_m1 = galvanic_rifle_p1_m1.attachments,
     forcesword_2h_p1_m1 = forcesword_2h_p1_m1.attachments,
     chainsword_2h_p1_m1 = chainsword_2h_p1_m1.attachments,
     ogryn_thumper_p1_m1 = ogryn_thumper_p1_m1.attachments,
@@ -233,6 +242,7 @@ local attachments = {
     combataxe_p1_m1 = combataxe_p1_m1.attachments,
     combataxe_p2_m1 = combataxe_p2_m1.attachments,
     combataxe_p3_m1 = combataxe_p3_m1.attachments,
+    arc_rifle_p1_m1 = arc_rifle_p1_m1.attachments,
     chainaxe_p1_m1 = chainaxe_p1_m1.attachments,
     crowbar_p1_m1 = crowbar_p1_m1.attachments,
     autogun_p1_m1 = autogun_p1_m1.attachments,
@@ -247,6 +257,10 @@ local attachments = {
     lasgun_p2_m1 = lasgun_p2_m1.attachments,
     lasgun_p3_m1 = lasgun_p3_m1.attachments,
     saw_p1_m1 = saw_p1_m1.attachments,
+    
+    powermaul_p3_m1 = powermaul_p3_m1.attachments,
+    transonic_sword_transonic_knife_p1_m1 = transonic_sword_transonic_knife_p1_m1.attachments,
+    powersword_p3_m1 = powersword_p3_m1.attachments,
 }
 
 --#region Copies
@@ -319,6 +333,14 @@ local attachments = {
                 attachments.forcesword_npc_01 = table_clone_safe(attachments.forcesword_p1_m1)
                 attachments.powersword_2h_npc_01 = table_clone_safe(attachments.powersword_p1_m1)
                 attachments.chainsword_npc_01 = table_clone_safe(attachments.chainsword_p1_m1)
+	--attachments.powermaul_p3_m2 = table_clone_safe(attachments.powermaul_p3_m1)
+	--attachments.powermaul_p3_m3 = table_clone_safe(attachments.powermaul_p3_m1)
+	--attactments.transonic_sword_transonic_knife_p1_m2 = table_clone_safe(attactments.transonic_sword_transonic_knife_p1_m1)
+	--attactments.transonic_sword_transonic_knife_p1_m3 = table_clone_safe(attactments.transonic_sword_transonic_knife_p1_m1)
+	--attactments.transonic_sword_transonic_knife_p1_m4 = table_clone_safe(attachments.transonic_sword_transonic_knife_p1_m1)
+        --attachments.powersword_p3_m2 = table_clone_safe(attachments.powersword_p3_m1)
+        --attachments.powersword_p3_m3 = table_clone_safe(attachments.powersword_p3_m1)
+
     --#endregion
     --#region Human ranged
         attachments.shotpistol_shield_p1_m2 = table_clone_safe(attachments.shotpistol_shield_p1_m1)
@@ -379,6 +401,7 @@ local attachments = {
                 attachments.autogun_npc_04 = table_clone_safe(attachments.autogun_p2_m1)
                 attachments.autogun_npc_05 = table_clone_safe(attachments.autogun_p2_m1)
                 attachments.flamer_npc_01 = table_clone_safe(attachments.flamer_p1_m1)
+        attachments.plasmagun_p1_m2 = table_clone_safe(attachments.plasmagun_p1_m1)
     --#endregion
 --#endregion
 
@@ -395,7 +418,9 @@ local fixes = {
     dual_autopistols_p1_m1 = dual_autopistols_p1_m1.fixes,
     ogryn_rippergun_p1_m1 = ogryn_rippergun_p1_m1.fixes,
     ogryn_powermaul_p1_m1 = ogryn_powermaul_p1_m1.fixes,
+    phosphor_pistol_p1_m1 = phosphor_pistol_p1_m1.fixes,
     ogryn_gauntlet_p1_m1 = ogryn_gauntlet_p1_m1.fixes,
+    galvanic_rifle_p1_m1 = galvanic_rifle_p1_m1.fixes,
     forcesword_2h_p1_m1 = forcesword_2h_p1_m1.fixes,
     chainsword_2h_p1_m1 = chainsword_2h_p1_m1.fixes,
     ogryn_thumper_p1_m1 = ogryn_thumper_p1_m1.fixes,
@@ -424,6 +449,7 @@ local fixes = {
     combataxe_p1_m1 = combataxe_p1_m1.fixes,
     combataxe_p2_m1 = combataxe_p2_m1.fixes,
     combataxe_p3_m1 = combataxe_p3_m1.fixes,
+    arc_rifle_p1_m1 = arc_rifle_p1_m1.fixes,
     chainaxe_p1_m1 = chainaxe_p1_m1.fixes,
     crowbar_p1_m1 = crowbar_p1_m1.fixes,
     autogun_p1_m1 = autogun_p1_m1.fixes,
@@ -438,6 +464,10 @@ local fixes = {
     lasgun_p2_m1 = lasgun_p2_m1.fixes,
     lasgun_p3_m1 = lasgun_p3_m1.fixes,
     saw_p1_m1 = saw_p1_m1.fixes,
+    
+    powermaul_p3_m1 = powermaul_p3_m1.fixes,
+    transonic_sword_transonic_knife_p1_m1 = transonic_sword_transonic_knife_p1_m1.fixes,
+    powersword_p3_m1 = powersword_p3_m1.fixes,
 }
 
 --#region Copies
@@ -510,6 +540,14 @@ local fixes = {
                 fixes.forcesword_npc_01 = table_clone_safe(fixes.forcesword_p1_m1)
                 fixes.powersword_2h_npc_01 = table_clone_safe(fixes.powersword_p1_m1)
                 fixes.chainsword_npc_01 = table_clone_safe(fixes.chainsword_p1_m1)
+	--fixes.powermaul_p3_m2 = table_clone_safe(fixes.powermaul_p3_m1)
+	--fixes.powermaul_p3_m3 = table_clone_safe(fixes.powermaul_p3_m1)
+	--fixes.transonic_sword_transonic_knife_p1_m2 = table_clone_safe(fixes.transonic_sword_transonic_knife_p1_m1)
+	--fixes.transonic_sword_transonic_knife_p1_m3 = table_clone_safe(fixes.transonic_sword_transonic_knife_p1_m1)
+	--fixes.transonic_sword_transonic_knife_p1_m4 = table_clone_safe(fixes.transonic_sword_transonic_knife_p1_m1)
+        --fixes.powersword_p3_m3 = table_clone_safe(fixes.powersword_p3_m1)
+        --fixes.powersword_p3_m2 = table_clone_safe(fixes.powersword_p3_m1)
+
     --#endregion
     --#region Human ranged
         fixes.shotpistol_shield_p1_m2 = table_clone_safe(fixes.shotpistol_shield_p1_m1)
@@ -570,6 +608,7 @@ local fixes = {
                 fixes.autogun_npc_04 = table_clone_safe(fixes.autogun_p2_m1)
                 fixes.autogun_npc_05 = table_clone_safe(fixes.autogun_p2_m1)
                 fixes.flamer_npc_01 = table_clone_safe(fixes.flamer_p1_m1)
+        fixes.plasmagun_p1_m2 = table_clone_safe(fixes.plasmagun_p1_m1)
     --#endregion
 --#endregion
 
@@ -586,7 +625,9 @@ local attachment_slots = {
     dual_autopistols_p1_m1 = dual_autopistols_p1_m1.attachment_slots,
     ogryn_rippergun_p1_m1 = ogryn_rippergun_p1_m1.attachment_slots,
     ogryn_powermaul_p1_m1 = ogryn_powermaul_p1_m1.attachment_slots,
+    phosphor_pistol_p1_m1 = phosphor_pistol_p1_m1.attachment_slots,
     ogryn_gauntlet_p1_m1 = ogryn_gauntlet_p1_m1.attachment_slots,
+    galvanic_rifle_p1_m1 = galvanic_rifle_p1_m1.attachment_slots,
     forcesword_2h_p1_m1 = forcesword_2h_p1_m1.attachment_slots,
     chainsword_2h_p1_m1 = chainsword_2h_p1_m1.attachment_slots,
     ogryn_thumper_p1_m1 = ogryn_thumper_p1_m1.attachment_slots,
@@ -615,6 +656,7 @@ local attachment_slots = {
     combataxe_p1_m1 = combataxe_p1_m1.attachment_slots,
     combataxe_p2_m1 = combataxe_p2_m1.attachment_slots,
     combataxe_p3_m1 = combataxe_p3_m1.attachment_slots,
+    arc_rifle_p1_m1 = arc_rifle_p1_m1.attachment_slots,
     chainaxe_p1_m1 = chainaxe_p1_m1.attachment_slots,
     crowbar_p1_m1 = crowbar_p1_m1.attachment_slots,
     autogun_p1_m1 = autogun_p1_m1.attachment_slots,
@@ -629,6 +671,10 @@ local attachment_slots = {
     lasgun_p2_m1 = lasgun_p2_m1.attachment_slots,
     lasgun_p3_m1 = lasgun_p3_m1.attachment_slots,
     saw_p1_m1 = saw_p1_m1.attachment_slots,
+    
+    powermaul_p3_m1 = powermaul_p3_m1.attachment_slots,
+    transonic_sword_transonic_knife_p1_m1 = transonic_sword_transonic_knife_p1_m1.attachment_slots,
+    powersword_p3_m1 = powersword_p3_m1.attachment_slots,
 }
 
 --#region Copies
@@ -701,6 +747,14 @@ local attachment_slots = {
                 attachment_slots.forcesword_npc_01 = table_clone_safe(attachment_slots.forcesword_p1_m1)
                 attachment_slots.powersword_2h_npc_01 = table_clone_safe(attachment_slots.powersword_p1_m1)
                 attachment_slots.chainsword_npc_01 = table_clone_safe(attachment_slots.chainsword_p1_m1)
+	--attachment_slots.powermaul_p3_m2 = table_clone_safe(attachment_slots.powermaul_p3_m1)
+	--attachment_slots.powermaul_p3_m3 = table_clone_safe(attachment_slots.powermaul_p3_m1)
+	--attachment_slots.transonic_sword_transonic_knife_p1_m2 = table_clone_safe(attachment_slots.transonic_sword_transonic_knife_p1_m1)
+	--attachment_slots.transonic_sword_transonic_knife_p1_m3 = table_clone_safe(attachment_slots.transonic_sword_transonic_knife_p1_m1)
+	--attachment_slots.transonic_sword_transonic_knife_p1_m4 = table_clone_safe(attachment_slots.transonic_sword_transonic_knife_p1_m1)
+        --attachment_slots.powersword_p3_m3 = table_clone_safe(attachment_slots.powersword_p3_m1)
+        --attachment_slots.powersword_p3_m2 = table_clone_safe(attachment_slots.powersword_p3_m1)
+
     --#endregion
     --#region Human ranged
         attachment_slots.shotpistol_shield_p1_m2 = table_clone_safe(attachment_slots.shotpistol_shield_p1_m1)
@@ -761,6 +815,7 @@ local attachment_slots = {
                 attachment_slots.autogun_npc_04 = table_clone_safe(attachment_slots.autogun_p2_m1)
                 attachment_slots.autogun_npc_05 = table_clone_safe(attachment_slots.autogun_p2_m1)
                 attachment_slots.flamer_npc_01 = table_clone_safe(attachment_slots.flamer_p1_m1)
+        attachment_slots.plasmagun_p1_m2 = table_clone_safe(attachment_slots.plasmagun_p1_m1)
     --#endregion
 --#endregion
 
@@ -777,7 +832,9 @@ local kitbashs = {
     dual_autopistols_p1_m1 = dual_autopistols_p1_m1.kitbashs,
     ogryn_rippergun_p1_m1 = ogryn_rippergun_p1_m1.kitbashs,
     ogryn_powermaul_p1_m1 = ogryn_powermaul_p1_m1.kitbashs,
+    phosphor_pistol_p1_m1 = phosphor_pistol_p1_m1.kitbashs,
     ogryn_gauntlet_p1_m1 = ogryn_gauntlet_p1_m1.kitbashs,
+    galvanic_rifle_p1_m1 = galvanic_rifle_p1_m1.kitbashs,
     forcesword_2h_p1_m1 = forcesword_2h_p1_m1.kitbashs,
     chainsword_2h_p1_m1 = chainsword_2h_p1_m1.kitbashs,
     ogryn_thumper_p1_m1 = ogryn_thumper_p1_m1.kitbashs,
@@ -805,6 +862,7 @@ local kitbashs = {
     combataxe_p1_m1 = combataxe_p1_m1.kitbashs,
     combataxe_p2_m1 = combataxe_p2_m1.kitbashs,
     combataxe_p3_m1 = combataxe_p3_m1.kitbashs,
+    arc_rifle_p1_m1 = arc_rifle_p1_m1.kitbashs,
     chainaxe_p1_m1 = chainaxe_p1_m1.kitbashs,
     crowbar_p1_m1 = crowbar_p1_m1.kitbashs,
     autogun_p1_m1 = autogun_p1_m1.kitbashs,
@@ -819,6 +877,10 @@ local kitbashs = {
     lasgun_p2_m1 = lasgun_p2_m1.kitbashs,
     lasgun_p3_m1 = lasgun_p3_m1.kitbashs,
     saw_p1_m1 = saw_p1_m1.kitbashs,
+    
+    powermaul_p3_m1 = powermaul_p3_m1.kitbashs,
+    transonic_sword_transonic_knife_p1_m1 = transonic_sword_transonic_knife_p1_m1.kitbashs,
+    powersword_p3_m1 = powersword_p3_m1.kitbashs,
 }
 
 -- Load kitbashes
@@ -855,7 +917,9 @@ local flashlight_templates = {
     dual_autopistols_p1_m1 = dual_autopistols_p1_m1.flashlight_templates,
     ogryn_rippergun_p1_m1 = ogryn_rippergun_p1_m1.flashlight_templates,
     ogryn_powermaul_p1_m1 = ogryn_powermaul_p1_m1.flashlight_templates,
+    phosphor_pistol_p1_m1 = phosphor_pistol_p1_m1.flashlight_templates,
     ogryn_gauntlet_p1_m1 = ogryn_gauntlet_p1_m1.flashlight_templates,
+    galvanic_rifle_p1_m1 = galvanic_rifle_p1_m1.flashlight_templates,
     forcesword_2h_p1_m1 = forcesword_2h_p1_m1.flashlight_templates,
     chainsword_2h_p1_m1 = chainsword_2h_p1_m1.flashlight_templates,
     ogryn_thumper_p1_m1 = ogryn_thumper_p1_m1.flashlight_templates,
@@ -884,6 +948,7 @@ local flashlight_templates = {
     combataxe_p1_m1 = combataxe_p1_m1.flashlight_templates,
     combataxe_p2_m1 = combataxe_p2_m1.flashlight_templates,
     combataxe_p3_m1 = combataxe_p3_m1.flashlight_templates,
+    arc_rifle_p1_m1 = arc_rifle_p1_m1.flashlight_templates,
     chainaxe_p1_m1 = chainaxe_p1_m1.flashlight_templates,
     crowbar_p1_m1 = crowbar_p1_m1.flashlight_templates,
     autogun_p1_m1 = autogun_p1_m1.flashlight_templates,
@@ -898,6 +963,10 @@ local flashlight_templates = {
     lasgun_p2_m1 = lasgun_p2_m1.flashlight_templates,
     lasgun_p3_m1 = lasgun_p3_m1.flashlight_templates,
     saw_p1_m1 = saw_p1_m1.flashlight_templates,
+    
+    powermaul_p3_m1 = powermaul_p3_m1.flashlight_templates,
+    transonic_sword_transonic_knife_p1_m1 = transonic_sword_transonic_knife_p1_m1.flashlight_templates,
+    powersword_p3_m1 = powersword_p3_m1.flashlight_templates,
 }
 
 --#region Copies
@@ -970,6 +1039,14 @@ local flashlight_templates = {
                 flashlight_templates.forcesword_npc_01 = table_clone_safe(flashlight_templates.forcesword_p1_m1)
                 flashlight_templates.powersword_2h_npc_01 = table_clone_safe(flashlight_templates.powersword_p1_m1)
                 flashlight_templates.chainsword_npc_01 = table_clone_safe(flashlight_templates.chainsword_p1_m1)
+	--flashlight_templates.powermaul_p3_m2 = table_clone_safe(flashlight_templates.powermaul_p3_m1)
+	--flashlight_templates.powermaul_p3_m3 = table_clone_safe(flashlight_templates.powermaul_p3_m1)
+	--flashlight_templates.transonic_sword_transonic_knife_p1_m2 = table_clone_safe(flashlight_templates.transonic_sword_transonic_knife_p1_m1)
+	--flashlight_templates.transonic_sword_transonic_knife_p1_m3 = table_clone_safe(flashlight_templates.transonic_sword_transonic_knife_p1_m1)
+	--flashlight_templates.transonic_sword_transonic_knife_p1_m4 = table_clone_safe(flashlight_templates.transonic_sword_transonic_knife_p1_m1)
+        --flashlight_templates.powersword_p3_m3 = table_clone_safe(flashlight_templates.powersword_p3_m1)
+        --flashlight_templates.powersword_p3_m2 = table_clone_safe(flashlight_templates.powersword_p3_m1)
+
     --#endregion
     --#region Human ranged
         flashlight_templates.shotpistol_shield_p1_m2 = table_clone_safe(flashlight_templates.shotpistol_shield_p1_m1)
@@ -1030,6 +1107,7 @@ local flashlight_templates = {
                 flashlight_templates.autogun_npc_04 = table_clone_safe(flashlight_templates.autogun_p2_m1)
                 flashlight_templates.autogun_npc_05 = table_clone_safe(flashlight_templates.autogun_p2_m1)
                 flashlight_templates.flamer_npc_01 = table_clone_safe(flashlight_templates.flamer_p1_m1)
+        flashlight_templates.plasmagun_p1_m2 = table_clone_safe(flashlight_templates.plasmagun_p1_m1)
     --#endregion
 --#endregion
 

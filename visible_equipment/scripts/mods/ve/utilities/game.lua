@@ -73,7 +73,7 @@ end
 
 mod.breed = function(self, profile)
     local profile = profile or self:profile()
-    return profile.archetype.name == "ogryn" and "ogryn" or "human"
+    return profile.archetype.name --== "ogryn" and "ogryn" or "human"
 end
 
 mod.equipment_component_from_unit = function(self, unit)

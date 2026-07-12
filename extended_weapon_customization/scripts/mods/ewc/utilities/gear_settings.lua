@@ -22,6 +22,10 @@ local master_items = mod:original_require("scripts/backend/master_items")
 -- #####  ││├─┤ │ ├─┤ #################################################################################################
 -- ##### ─┴┘┴ ┴ ┴ ┴ ┴ #################################################################################################
 
+local ItemMaterialOverridesGearMaterials = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/legacy_material_overrides/item_material_overrides_gear_materials")
+local ItemMaterialOverridesGearPatterns = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/legacy_material_overrides/item_material_overrides_gear_patterns")
+local ItemMaterialOverridesGearColors = mod:io_dofile("extended_weapon_customization/scripts/mods/ewc/legacy_material_overrides/item_material_overrides_gear_colors")
+
 local pt = mod:pt()
 local OVERRIDE_TYPE = table.enum("color", "pattern", "wear")
 local ALL_OVERRIDE_TYPES = {OVERRIDE_TYPE.color, OVERRIDE_TYPE.pattern, OVERRIDE_TYPE.wear}
@@ -102,9 +106,9 @@ mod.item_from_material_name = function(self, material_override)
 end
 
 mod.override_type = function(self, material_override)
-    -- if ItemMaterialOverridesGearColors[material_override] then return OVERRIDE_TYPE.color end
-    -- if ItemMaterialOverridesGearPatterns[material_override] then return OVERRIDE_TYPE.pattern end
-    -- if ItemMaterialOverridesGearMaterials[material_override] then return OVERRIDE_TYPE.wear end
+    if ItemMaterialOverridesGearColors[material_override] then return OVERRIDE_TYPE.color end
+    if ItemMaterialOverridesGearPatterns[material_override] then return OVERRIDE_TYPE.pattern end
+    if ItemMaterialOverridesGearMaterials[material_override] then return OVERRIDE_TYPE.wear end
 end
 
 mod.remove_override_type = function(self, material_overrides, remove_type)

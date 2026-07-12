@@ -5,16 +5,22 @@ local mod = get_mod("extended_weapon_customization")
 -- ##### ┴  └─┘┴└─└  └─┘┴└─┴ ┴┴ ┴┘└┘└─┘└─┘ ############################################################################
 -- #region Performance
     local unit = Unit
+    local pairs = pairs
+    local table = table
     local CLASS = CLASS
     local managers = Managers
+    local table_size = table.size
     local script_unit = ScriptUnit
+    local table_clear = table.clear
     local unit_sway_callback = unit.sway_callback
     local unit_sight_callback = unit.sight_callback
     local unit_shield_callback = unit.shield_callback
     local script_unit_extension = script_unit.extension
     local unit_attachment_callback = unit.attachment_callback
     local unit_flashlight_callback = unit.flashlight_callback
+    local unit_has_animation_event = unit.has_animation_event
     local unit_damage_type_callback = unit.damage_type_callback
+    local unit_has_animation_state_machine = unit.has_animation_state_machine
 --#endregion
 
 -- ##### ┌┬┐┌─┐┌┬┐┌─┐ #################################################################################################
@@ -24,6 +30,9 @@ local mod = get_mod("extended_weapon_customization")
 local SLOT_PRIMARY = "slot_primary"
 local SLOT_SECONDARY = "slot_secondary"
 local VALID_SLOTS = {SLOT_PRIMARY, SLOT_SECONDARY}
+
+-- local STABILIZE_NECK_SUPPORTED = {}
+-- local TEMP_ITEM_STABILIZE_NECK = {}
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌  ┬ ┬┌─┐┌─┐┬┌─┌─┐ ######################################################################
 -- ##### ├┤ │ │││││   │ ││ ││││  ├─┤│ ││ │├┴┐└─┐ ######################################################################
@@ -115,10 +124,54 @@ mod:hook(CLASS.EquipmentComponent, "wield_slot", function(func, slot, first_pers
 end)
 
 mod:hook(CLASS.EquipmentComponent, "update_item_visibility", function(func, equipment, wielded_slot, unit_3p, unit_1p, first_person_mode, item_definitions, ...)
+
+    -- local stabilize_neck_supported = STABILIZE_NECK_SUPPORTED[unit_3p]
+
+    -- if stabilize_neck_supported == nil then
+    --     -- Check support for stabilize neck
+    --     if unit_has_animation_state_machine(unit_3p) and unit_has_animation_event(unit_3p, "lock_head") and unit_has_animation_event(unit_3p, "unlock_head") then
+    --         STABILIZE_NECK_SUPPORTED[unit_3p] = true
+    --     else
+    --         STABILIZE_NECK_SUPPORTED[unit_3p] = false
+    --     end
+    --     stabilize_neck_supported = STABILIZE_NECK_SUPPORTED[unit_3p]
+    -- end
+
+    -- -- Check if stabilize neck is not supported
+    -- if not stabilize_neck_supported and table_size(equipment) > 0 then
+    --     -- Iterate through equipment
+    --     for slot_name, slot in pairs(equipment) do
+    --         -- Get item
+    --         local item = slot.item
+    --         -- Check if item has stabilize neck
+    --         if item and item.stabilize_neck then
+    --             -- Save stabilize neck for unit_3p and slot
+    --             TEMP_ITEM_STABILIZE_NECK[slot_name] = item.stabilize_neck
+    --             -- Unset stabilize neck in item
+    --             item.stabilize_neck = nil
+    --         end
+    --     end
+    -- end
+
     -- Original function
     func(equipment, wielded_slot, unit_3p, unit_1p, first_person_mode, item_definitions, ...)
     -- Update flashlight visibility
     unit_flashlight_callback(unit_3p, "on_update_item_visibility", wielded_slot)
     -- Update attachment callback visibility
     unit_attachment_callback(unit_3p, "on_update_item_visibility", wielded_slot)
+
+    -- -- Check if stabilize neck is not supported
+    -- if not stabilize_neck_supported and table_size(TEMP_ITEM_STABILIZE_NECK) > 0 then
+    --     -- Iterate through saved stabilize neck
+    --     for slot_name, stabilize_neck in pairs(TEMP_ITEM_STABILIZE_NECK) do
+    --         local slot = equipment[slot_name]
+    --         local item = slot and slot.item
+    --         if item then
+    --             item.stabilize_neck = stabilize_neck
+    --         end
+    --     end
+    --     -- Clear saved stabilize neck
+    --     table_clear(TEMP_ITEM_STABILIZE_NECK)
+    -- end
+
 end)

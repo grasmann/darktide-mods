@@ -469,22 +469,6 @@ VisibleEquipmentExtension.delete_all = function(self, target_slot)
             end
         end
     end
-    -- Delete center unit
-    -- Iterate through equipment
-    for slot, units in pairs(self.objects) do
-        if not target_slot or target_slot == slot.name then
-            -- Iterate through objects
-            for index, obj in pairs(self.objects[slot]) do
-                -- Unlink center unit
-                world_unlink_unit(self.world, self.unit_center_point[slot][obj])
-                -- Delete center unit
-                -- unit_spawner:mark_for_deletion(self.unit_center_point[slot][obj])
-                world_destroy_unit(self.world, self.unit_center_point[slot][obj])
-                -- Unset center unit
-                self.unit_center_point[slot][obj] = nil
-            end
-        end
-    end
     -- Delete item unit(s)
     if all_item_units then
         for slot_name, item_unit in pairs(all_item_units) do
@@ -498,6 +482,22 @@ VisibleEquipmentExtension.delete_all = function(self, target_slot)
                     -- Unset item unit
                     item_unit = nil
                 end
+            end
+        end
+    end
+    -- Delete center unit
+    -- Iterate through equipment
+    for slot, units in pairs(self.objects) do
+        if not target_slot or target_slot == slot.name then
+            -- Iterate through objects
+            for index, obj in pairs(self.objects[slot]) do
+                -- Unlink center unit
+                world_unlink_unit(self.world, self.unit_center_point[slot][obj])
+                -- Delete center unit
+                -- unit_spawner:mark_for_deletion(self.unit_center_point[slot][obj])
+                world_destroy_unit(self.world, self.unit_center_point[slot][obj])
+                -- Unset center unit
+                self.unit_center_point[slot][obj] = nil
             end
         end
     end

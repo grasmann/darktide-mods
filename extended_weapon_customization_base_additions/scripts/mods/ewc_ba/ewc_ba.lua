@@ -846,6 +846,31 @@ local extended_weapon_customization_plugin = {
             workflow_state = "RELEASABLE",
             is_full_item = true,
         },
+        -- ##### Lasgun sight #####
+        [_item_ranged.."/sights/lasgun_sight"] = {
+            is_fallback_item = false,
+            show_in_1p = true,
+            base_unit = "content/weapons/player/ranged/lasgun_rifle/attachments/sight_01/sight_01",
+            item_list_faction = "Player",
+            tags = {
+            },
+            only_show_in_1p = false,
+            feature_flags = {
+                "FEATURE_item_retained",
+            },
+            attach_node = "ap_sight_01",
+            resource_dependencies = {
+                ["content/weapons/player/ranged/lasgun_rifle/attachments/sight_01/sight_01"] = true,
+            },
+            attachments = {
+            },
+            workflow_checklist = {
+            },
+            display_name = "n/a",
+            name = _item_ranged.."/sights/lasgun_sight",
+            workflow_state = "RELEASABLE",
+            is_full_item = true,
+        },
     },
     flashlight_templates = {
         -- ##### Red Laser Pointers ###################################################################################
@@ -1357,7 +1382,9 @@ local load_weapons = {
     "thunderhammer_2h_p1_m1",
     "dual_autopistols_p1_m1",
     "ogryn_rippergun_p1_m1",
+    "phosphor_pistol_p1_m1",
     "ogryn_gauntlet_p1_m1",
+    "galvanic_rifle_p1_m1",
     "ogryn_thumper_p1_m1",
     "forcesword_2h_p1_m1",
     "powersword_2h_p1_m1",
@@ -1375,6 +1402,7 @@ local load_weapons = {
     "dual_shivs_p1_m1",
     "laspistol_p1_m1",
     "plasmagun_p1_m1",
+    "arc_rifle_p1_m1",
     "chainaxe_p1_m1",
     "autogun_p1_m1",
     "autogun_p2_m1",

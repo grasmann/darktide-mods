@@ -49,17 +49,19 @@ mod:hook(CLASS.PackageManager, "release", function(func, self, id, ...)
     end
     -- Get load call item
     local load_call_item = self._load_call_data[id]
-    -- Get package name
-	local package_name = load_call_item.package_name
-    -- Check package name
-    check_package_name(package_name)
-    -- Prevent release
-    if not pt.resource_packages[package_name] then
-        -- Original function
-        return func(self, id, ...)
-    -- else
-    --     -- Release prevented
-    --     mod:print("prevent release: "..tostring(package_name))
+    if load_call_item then
+        -- Get package name
+        local package_name = load_call_item.package_name
+        -- Check package name
+        check_package_name(package_name)
+        -- Prevent release
+        if not pt.resource_packages[package_name] then
+            -- Original function
+            return func(self, id, ...)
+        -- else
+        --     -- Release prevented
+        --     mod:print("prevent release: "..tostring(package_name))
+        end
     end
 end)
 

@@ -166,6 +166,10 @@ mod:hook_require("scripts/managers/ui/ui_profile_spawner", function(instance)
         end
     end
 
+    instance.spawned_profile = function(self)
+        return self._character_spawn_data and self._character_spawn_data.profile
+    end
+
 end)
 
 -- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌  ┬ ┬┌─┐┌─┐┬┌─┌─┐ ######################################################################

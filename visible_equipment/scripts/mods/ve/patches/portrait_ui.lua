@@ -36,59 +36,29 @@ local Breeds = mod:original_require("scripts/settings/breed/breeds")
 local SLOT_PRIMARY = "slot_primary"
 local SLOT_SECONDARY = "slot_secondary"
 
--- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌  ┬ ┬┌─┐┌─┐┬┌─┌─┐ ######################################################################
--- ##### ├┤ │ │││││   │ ││ ││││  ├─┤│ ││ │├┴┐└─┐ ######################################################################
--- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘  ┴ ┴└─┘└─┘┴ ┴└─┘ ######################################################################
+-- ##### ┌─┐┬  ┌─┐┌─┐┌─┐  ┬ ┬┌─┐┌─┐┬┌─┌─┐ #############################################################################
+-- ##### │  │  ├─┤└─┐└─┐  ├─┤│ ││ │├┴┐└─┐ #############################################################################
+-- ##### └─┘┴─┘┴ ┴└─┘└─┘  ┴ ┴└─┘└─┘┴ ┴└─┘ #############################################################################
 
--- mod:hook(CLASS.PortraitUI, "_store_camera_settings_by_breed", function(func, self, breed, camera_unit, ...)
--- 	-- Original function
---     func(self, breed, camera_unit, ...)
---     -- Add custom placements
-    -- local placement_camera = mod.settings.placement_camera
-    -- for placement_name, data in pairs(placement_camera[breed]) do
-    --     if data.position then
-    --         local position = data.position and vector3_unbox(data.position)
-    --         if position then
-    --             local camera_table = self._breed_camera_settings[breed].camera_settings_by_item_slot
-    --             camera_table[placement_name] = table_clone(camera_table.slot_animation_end_of_round)
-    --             camera_table[placement_name].boxed_camera_start_position = {position.x, position.y, position.z}
-    --         end
-    --     elseif placement_name == "default" or placement_name == "backpack" then
-    --         for item_type, data in pairs(data) do
-    --             local position = data.position and vector3_unbox(data.position)
-    --             if position then
-    --                 local placement_name = placement_name.."_"..item_type
-    --                 local camera_table = self._breed_camera_settings[breed].camera_settings_by_item_slot
-    --                 camera_table[placement_name] = table_clone(camera_table.slot_animation_end_of_round)
-    --                 camera_table[placement_name].boxed_camera_start_position = {position.x, position.y, position.z}
-    --             end
-    --         end
-    --     end
-    -- end
--- end)
+mod:hook_require("scripts/ui/portrait_ui", function(instance)
 
-mod:hook(CLASS.PortraitUI, "_store_camera_settings_by_body_size", function(func, self, body_size, camera_unit, ...)
-    -- Original function
-    func(self, body_size, camera_unit, ...)
-
-    if self._profile_spawner then
-
-        local unit = self._profile_spawner:spawned_character_unit()
-        local breed = unit and self:get_data(unit, "breed_name")
-        -- local archetype = profile.archetype
-        -- local breed_name = archetype.breed
-        -- local breed = Breeds[breed_name]
-
+    instance.inject_camera_settings = function(self, profile)
+        -- Get breed info
+        local breed_name = profile and profile.breed
+        local breed = Breeds[breed_name]
+        local body_size = breed and breed.body_size
         -- Add custom placements
         local placement_camera = mod.settings.placement_camera
-        if breed and placement_camera[breed] then
-            for placement_name, data in pairs(placement_camera[breed]) do
+        local placement_camera_breed = placement_camera[breed_name]
+        if breed and placement_camera_breed then
+            for placement_name, data in pairs(placement_camera_breed) do
                 if data.position then
                     local position = data.position and vector3_unbox(data.position)
                     if position then
                         local camera_table = self._body_size_camera_settings[body_size]
-                        camera_table.camera_settings_by_item_slot[placement_name] = table_clone(camera_table.camera_settings_by_item_slot.slot_animation_end_of_round)
-                        camera_table.camera_settings_by_item_slot[placement_name].boxed_camera_start_position = {position.x, position.y, position.z}
+                        local slot_settings = camera_table.camera_settings_by_item_slot
+                        slot_settings[placement_name] = table_clone(slot_settings.slot_animation_end_of_round)
+                        slot_settings[placement_name].boxed_camera_start_position = {position.x, position.y, position.z}
                     end
                 elseif placement_name == "default" or placement_name == "backpack" then
                     for item_type, data in pairs(data) do
@@ -96,47 +66,21 @@ mod:hook(CLASS.PortraitUI, "_store_camera_settings_by_body_size", function(func,
                         if position then
                             local placement_name = placement_name.."_"..item_type
                             local camera_table = self._body_size_camera_settings[body_size]
-                            camera_table.camera_settings_by_item_slot[placement_name] = table_clone(camera_table.camera_settings_by_item_slot.slot_animation_end_of_round)
-                            camera_table.camera_settings_by_item_slot[placement_name].boxed_camera_start_position = {position.x, position.y, position.z}
+                            local slot_settings = camera_table.camera_settings_by_item_slot
+                            slot_settings[placement_name] = table_clone(slot_settings.slot_animation_end_of_round)
+                            slot_settings[placement_name].boxed_camera_start_position = {position.x, position.y, position.z}
                         end
                     end
                 end
             end
         end
-
     end
 
-	-- local camera_settings_by_item_slot = {}
-
-	-- for slot_name, slot in pairs(ItemSlotSettings) do
-	-- 	local key = string.format("%s_%s", body_size, slot_name)
-	-- 	local slot_camera_unit = self:_get_unit_by_value_key("camera_gear_slot_name", key)
-
-	-- 	if slot_camera_unit then
-	-- 		local slot_camera_position = Unit.world_position(slot_camera_unit, 1)
-	-- 		local slot_camera_rotation = Unit.world_rotation(slot_camera_unit, 1)
-
-	-- 		camera_settings_by_item_slot[slot_name] = {
-	-- 			body_size = body_size,
-	-- 			slot_name = slot_name,
-	-- 			camera_unit = slot_camera_unit,
-	-- 			boxed_camera_start_position = Vector3.to_array(slot_camera_position),
-	-- 			boxed_camera_start_rotation = QuaternionBox(slot_camera_rotation),
-	-- 		}
-	-- 	end
-	-- end
-
-	-- local camera_position = Unit.world_position(camera_unit, 1)
-	-- local camera_rotation = Unit.world_rotation(camera_unit, 1)
-
-	-- self._body_size_camera_settings[body_size] = {
-	-- 	body_size = body_size,
-	-- 	camera_unit = camera_unit,
-	-- 	boxed_camera_start_position = Vector3.to_array(camera_position),
-	-- 	boxed_camera_start_rotation = QuaternionBox(camera_rotation),
-	-- 	camera_settings_by_item_slot = camera_settings_by_item_slot,
-	-- }
 end)
+
+-- ##### ┌─┐┬ ┬┌┐┌┌─┐┌┬┐┬┌─┐┌┐┌  ┬ ┬┌─┐┌─┐┬┌─┌─┐ ######################################################################
+-- ##### ├┤ │ │││││   │ ││ ││││  ├─┤│ ││ │├┴┐└─┐ ######################################################################
+-- ##### └  └─┘┘└┘└─┘ ┴ ┴└─┘┘└┘  ┴ ┴└─┘└─┘┴ ┴└─┘ ######################################################################
 
 mod:hook(CLASS.PortraitUI, "_spawn_profile", function(func, self, profile, render_context, ...)
 
@@ -146,6 +90,8 @@ mod:hook(CLASS.PortraitUI, "_spawn_profile", function(func, self, profile, rende
 
             self._profile_spawner = nil
         end
+
+        self:inject_camera_settings(profile)
 
         local world_spawner = self._world_spawner
         local world = world_spawner:world()
@@ -184,9 +130,6 @@ mod:hook(CLASS.PortraitUI, "_spawn_profile", function(func, self, profile, rende
 
         profile_spawner:spawn_profile(profile, spawn_position, spawn_rotation, nil, optional_state_machine, optional_animation_event, nil, optional_face_animation_event, false, disable_hair_state_machine, nil, nil, companion_data)
 
-        -- local archetype = profile.archetype
-        -- local breed = archetype.breed
-        -- local camera_settings = self._breed_camera_settings[breed]
         local archetype = profile.archetype
         local breed_name = archetype.breed
         local breed = Breeds[breed_name]
@@ -196,7 +139,6 @@ mod:hook(CLASS.PortraitUI, "_spawn_profile", function(func, self, profile, rende
 
         if render_context then
             local camera_focus_slot_name = placement or render_context.camera_focus_slot_name
-            -- local item = profile.loadout[slot_name]
             local item_type_name = item and item.item_type and placement.."_"..item.item_type
             if camera_settings.camera_settings_by_item_slot[item_type_name] then camera_focus_slot_name = item_type_name end
 
