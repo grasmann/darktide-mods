@@ -542,7 +542,10 @@ ScoreboardHistoryView.cb_delete_pressed = function(self)
         if mod:delete_scoreboard_history_entry(self.entry.name) then
             mod:close_scoreboard_view()
             self.entry = nil
-            self:_setup_category_config()
+
+            pcall(function()
+                self:_setup_category_config(true)
+            end)
         end
     end
 end
