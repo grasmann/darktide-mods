@@ -14,7 +14,7 @@ local ScoreboardViewSettings = mod:io_dofile("scoreboard/scripts/mods/scoreboard
 local UIWidget = mod:original_require("scripts/managers/ui/ui_widget")
 local UIRenderer = mod:original_require("scripts/managers/ui/ui_renderer")
 local base_z = 100
-local base_x = 135
+local base_x = -1
 
 mod.tactical_overview = mod:get("tactical_overview")
 
@@ -46,7 +46,7 @@ mod:hook_require("scripts/ui/hud/elements/tactical_overlay/hud_element_tactical_
         parent = "screen",
         horizontal_alignment = "center",
         size = {ScoreboardViewSettings.scoreboard_size[1], ScoreboardViewSettings.scoreboard_size[2]},
-        position = {base_x, 0, base_z}
+        position = {mod:get("scoreboard_tactical_overlay_x"), mod:get("scoreboard_tactical_overlay_y"), base_z}
     }
     instance.scenegraph_definition.scoreboard_rows = {
         vertical_alignment = "top",

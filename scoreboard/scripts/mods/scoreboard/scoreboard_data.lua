@@ -62,6 +62,16 @@ return {
 					},
 				},
 			},
+			{["setting_id"] = "scoreboard_tactical_overlay_x",
+				["type"] = "numeric",
+				["default_value"] = 0,
+				["range"] = {-500, 500},
+			},
+			{["setting_id"] = "scoreboard_tactical_overlay_y",
+				["type"] = "numeric",
+				["default_value"] = 0,
+				["range"] = {-500, 500},
+			},
 			{["setting_id"] = "scoreboard_panel_height",
 				["type"] = "numeric",
 				["default_value"] = 1000,
@@ -194,6 +204,10 @@ return {
 						["default_value"] = true
 					},
 					{["setting_id"] = "scripture_grimoire_pickup",
+						["type"] = "checkbox",
+						["default_value"] = false
+					},
+					{["setting_id"] = "message_expedition_pocketable_pickup",
 						["type"] = "checkbox",
 						["default_value"] = false
 					},
